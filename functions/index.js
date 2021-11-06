@@ -1,9 +1,15 @@
 const functions = require("firebase-functions");
+const app = require("express")();
+const auth = require("./utils/auth");
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+const {
+    getAllCases,
+    getCaseWithId,
+    getAnswersInQAItem
+} = require("./api/qa-data");
+
+app.get('/imported-data', getAllCases);
+app.get('/case/:caseId', getCaseWithId);
+app.get('/case/:caseId/:qaItemId', getAnswersInQAItem);
+
+exports.api = functions.https.onRequest(app);
