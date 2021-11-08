@@ -97,7 +97,6 @@ export class QAForm extends React.Component {
     }
 
     addNewAnswer = async (answer) => {
-        console.log("Added answer: " + answer);
         const questionId = this.state.questionList[this.state.currentAnswerListIndex].questionId;
         // TODO: Add POST method to push new answer to server
 

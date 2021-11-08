@@ -1,5 +1,6 @@
 import './qaList.css';
 import React from "react";
+import { timestampToString } from './dateTimeHandler';
 
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
@@ -58,7 +59,7 @@ class App extends React.Component
             <tr key={caseItem.itemId}>
               <td>{caseItem.itemId}</td>
               <td><img src={caseItem.imgUrl} alt="" className="itemImg"/></td>
-              <td>{caseItem.createdAt._seconds}</td>
+              <td>{timestampToString(caseItem.createdAt._seconds)}</td>
               <td>
                 <div className="actions">
                   <Button variant="warning" onClick={() => this.loadQAFormDialog(caseItem.itemId)}>Modify</Button>
@@ -84,7 +85,7 @@ class App extends React.Component
             <thead>
               <tr>
                 <th>ID</th>
-                <th>ImageUrl</th>
+                <th>Preview</th>
                 <th>Created at</th>
                 <th>Actions</th>
               </tr>
