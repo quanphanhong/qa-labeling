@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
+import ListGroup from "react-bootstrap/ListGroup";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import ReactLoading from 'react-loading';
@@ -27,7 +28,8 @@ export class QAForm extends React.Component {
             currentAnswerList: [],
             dataIsLoaded: false,
             answerIsLoaded: false,
-          }
+        }
+        this.onKeyUp = this.onKeyUp.bind(this);
     }
 
     async fetchQuestionList() {
@@ -85,20 +87,27 @@ export class QAForm extends React.Component {
         var answers = [];
         const answerList = this.state.currentAnswerList;
 
-        for (let i = 0; i <= answerList.length; i++) {
+        for (let i = 0; i < answerList.length; i++) {
             answers.push(
-                <Form.Group key={"a" + i} className="mb-3" controlId="floatingTextarea">
-                    <Form.Label>Answer {i + 1}</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Your answer"
-                        defaultValue={(answerList.length > i ? answerList[i].answer : "")}
-                    />
-                </Form.Group>
+                <ListGroup.Item key={answerList[i].answerId}>{answerList[i].answer}</ListGroup.Item>
             );
         }
 
         return (answers);
+    }
+
+    addNewAnswer = async (answer) => {
+        console.log("Added answer: " + answer);
+        const questionId = this.state.questionList[this.state.currentAnswerListIndex].questionId;
+        // TODO: Add POST method to push new answer to server
+
+        await this.getAnswerList(questionId);
+    }
+
+    onKeyUp = async (event) => {
+        if (event.key === "Enter") {
+            await this.addNewAnswer(event.target.value);
+        }
     }
 
     buildQuestionList = () => {
@@ -138,7 +147,16 @@ export class QAForm extends React.Component {
                             }
                         }}>View Answers</Button>
 
-                    {this.state.currentAnswerListIndex === i ? this.buildAnswerList() : <></>}
+                    <ListGroup>
+                        {this.state.currentAnswerListIndex === i ? this.buildAnswerList() : <></>}
+                    </ListGroup>
+
+                    {this.state.currentAnswerListIndex === i ?
+                        <Form.Control
+                            size="sm"
+                            type="text"
+                            placeholder="Enter new answer (Press Enter to add)"
+                            onKeyUp={this.onKeyUp}/> : <></>}
                 </div>
             );
         }
