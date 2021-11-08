@@ -1,10 +1,13 @@
-import './App.css';
+import './qaList.css';
 import React from "react";
 
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
+import Modal from "react-bootstrap/Modal"
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+import {QAForm} from "../qaForm/qaForm"
 
 const axios = require ("axios");
 
@@ -16,6 +19,8 @@ class App extends React.Component
     this.state = {
       cases: [],
       dataIsLoaded: false,
+      showQAForm: false,
+      openedQAItemId: null,
     }
   }
 
@@ -37,19 +42,26 @@ class App extends React.Component
     await this.fetchAllCases();
   }
 
+  loadQAFormDialog = (itemId) => {
+    this.setState({
+      showQAForm: true,
+      openedQAItemId: itemId
+    });
+  }
+
   loadCaseTable = (cases, dataIsLoaded) => {
     if (!dataIsLoaded)
       return;
 
     return (
         cases.map(caseItem => (
-            <tr>
+            <tr key={caseItem.itemId}>
               <td>{caseItem.itemId}</td>
               <td><img src={caseItem.imgUrl} alt="" className="itemImg"/></td>
               <td>{caseItem.createdAt._seconds}</td>
               <td>
                 <div className="actions">
-                  <Button variant="warning">Modify</Button>
+                  <Button variant="warning" onClick={() => this.loadQAFormDialog(caseItem.itemId)}>Modify</Button>
                   <Button variant="danger">Delete</Button>
                 </div>
               </td>
@@ -87,17 +99,37 @@ class App extends React.Component
 
   render() {
     const { cases, dataIsLoaded } = this.state;
+    const handleFormOpened = (shouldOpen) => {
+      this.setState({
+        showQAForm: shouldOpen,
+      });
+    }
+
     return (
-      <div className="App">
-        <div className="listNav">
-          <h1>Document Visual Question Answering Labeling</h1>
-          <Button variant="outline-primary">Import</Button>
+      <>
+        <div className="App">
+          <div className="listNav">
+            <h1>Document Visual Question Answering Labeling</h1>
+            <Button variant="outline-primary" onClick={() => {this.loadQAFormDialog(null)}}>Import</Button>
+          </div>
+          <div className="itemList">
+            <h2>List of imported items</h2>
+            {this.showTable(cases, dataIsLoaded)}
+          </div>
         </div>
-        <div className="itemList">
-          <h2>List of imported items</h2>
-          {this.showTable(cases, dataIsLoaded)}
-        </div>
-      </div>
+        <Modal fullscreen="xxl-down" show={this.state.showQAForm}>
+          <Modal.Header closeButton onAbort={() => handleFormOpened(false)}>
+            <Modal.Title>Add/Modify QA item</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <QAForm qaItemId={this.state.openedQAItemId} />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => handleFormOpened(false)}>Close</Button>
+            <Button variant="primary">Save Changes</Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     );
   }
 }
