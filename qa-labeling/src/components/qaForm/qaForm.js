@@ -4,14 +4,12 @@ import './qaForm.css'
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
+import Button from "react-bootstrap/Button";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import ReactLoading from 'react-loading';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
-const axios = require ("axios");
+import { fetchQAItem, saveQuestionListInQAItem } from "../../model/dataHandler";
 
 export class QAForm extends React.Component {
     constructor(props) {
@@ -20,142 +18,153 @@ export class QAForm extends React.Component {
         this.state = {
             qaItem: [],
             qaItemId: props.qaItemId,
-            noLocalQuestions: 0,
-            localQuestionList: [],
+            noQuestions: 0,
             questionList: [],
             imageUrl: "",
-            currentAnswerListIndex: -1,
-            currentAnswerList: [],
-            dataIsLoaded: false,
-            answerIsLoaded: false,
         }
+
         this.onKeyUp = this.onKeyUp.bind(this);
     }
 
-    async fetchQuestionList() {
-        await axios({
-            method: "get",
-            url: "http://us-central1-question-answering-labeling.cloudfunctions.net/api/case/" + this.state.qaItemId,
-            responseType: "stream",
-        })
-        .then((response) => {
-            this.setState({
-                qaItem: response.data,
-                questionList: response.data.questions,
-                localQuestionList: response.data.questions,
-                imageUrl: response.data.imgUrl,
-                dataIsLoaded: true,
-                answerIsLoaded: true,
-            });
-        });
+    componentDidMount() {
+        this.updateQAItem();
     }
 
-    async componentDidMount() {
-        await this.fetchQuestionList();
-    }
-
-    async getAnswerList(questionId) {
-        var answerList = [];
-
-        await axios({
-            method: "get",
-            url: "http://us-central1-question-answering-labeling.cloudfunctions.net/api/case/" + this.state.qaItemId + "/" + questionId,
-            responseType: "stream",
-        })
-        .then((response) => {
-            answerList = response.data;
-        });
+    updateQAItem() {
+        const qaItem = fetchQAItem(this.state.qaItemId);
 
         this.setState({
-            currentAnswerList: answerList,
-            answerIsLoaded: true,
+            qaItem: qaItem,
+            imageUrl: qaItem.imgUrl,
+            questionList: qaItem.questionList,
+            noQuestions: qaItem.questionList.length,
         });
     }
 
-    buildAnswerList() {
-        if (!this.state.answerIsLoaded) {
-            return (
-                <ReactLoading
-                    className="loadingIcon"
-                    type="spinningBubbles"
-                    color="blue"
-                    height="10%"
-                    width="10%" />
-            );
-        }
+    render() {
 
-        var answers = [];
-        const answerList = this.state.currentAnswerList;
+        return (
+            <Col className="formContainer">
+                {this.buildImagePreview()}
+                {this.buildQAForm()}
 
-        for (let i = 0; i < answerList.length; i++) {
-            answers.push(
-                <ListGroup.Item key={answerList[i].answerId}>{answerList[i].answer}</ListGroup.Item>
-            );
-        }
+                <Button
+                    className="saveButton"
+                    onClick={
+                        () => saveQuestionListInQAItem(this.state.qaItemId, this.state.questionList)
+                    }>
+                    Save
+                </Button>
+            </Col>
+        );
+    };
 
-        return (answers);
+    buildImagePreview() {
+        return (
+            <TransformWrapper as={Row}>
+                <TransformComponent>
+                    <img src={this.state.imageUrl} height="100%" alt="PreviewImage"/>
+                </TransformComponent>
+            </TransformWrapper>
+        );
     }
 
-    addNewAnswer = async (answer) => {
-        const questionId = this.state.questionList[this.state.currentAnswerListIndex].questionId;
-        // TODO: Add POST method to push new answer to server
+    buildQAForm() {
+        return (
+            <Form as={Row} className="qaForm">
+                    <Row className="mb-3">
+                        {this.buildImageForm()}
+                        {this.buildQuestionCountForm()}
+                    </Row>
 
-        await this.getAnswerList(questionId);
+                    {this.buildQuestionList()}
+                </Form>
+        );
     }
 
-    onKeyUp = async (event) => {
-        if (event.key === "Enter") {
-            await this.addNewAnswer(event.target.value);
+    buildImageForm() {
+        const updateImageUrl = (event) => {
+            this.setState({imageUrl: event.target.value});
         }
+
+        return (
+            <Form.Group as={Col} controlId="floatingTextarea">
+                <Form.Label>Image URL</Form.Label>
+                <Form.Control
+                    type="url"
+                    placeholder="Enter image URL"
+                    defaultValue={this.state.imageUrl}
+                    onChange={updateImageUrl}
+                />
+                <Form.Text className="text-muted">
+                </Form.Text>
+            </Form.Group>
+        )
+    }
+
+    buildQuestionCountForm() {
+        const handleNoQuestionsChanged = (event) => {
+            const prevNoQuestions = this.state.noQuestions;
+            const currentNoQuestions = event.target.value;
+            let currentQuestionList = Object.assign({}, this.state.questionList);
+
+            if (prevNoQuestions < currentNoQuestions) {
+                const newQuestion = {
+                    question: "",
+                    answerList: [],
+                };
+                currentQuestionList[currentNoQuestions - 1] = newQuestion;
+            }
+            else if (prevNoQuestions > currentNoQuestions) {
+                currentQuestionList.length = currentNoQuestions - 1;
+            }
+
+            this.setState({
+                noQuestions: currentNoQuestions,
+                questionList: currentQuestionList,
+            });
+        }
+
+        return (
+            <Form.Group as={Col} controlId="floatingTextarea">
+                <Form.Label>Number of questions</Form.Label>
+                <Form.Control
+                    type="number"
+                    placeholder="Enter number of questions"
+                    onChange={handleNoQuestionsChanged}
+                />
+                <Form.Text className="text-muted">
+                </Form.Text>
+            </Form.Group>
+        );
     }
 
     buildQuestionList = () => {
         var questions = [];
-        const qList = this.state.localQuestionList;
+        const qList = this.state.questionList;
 
-        const updateAnswerList = async (index) => {
-            if (index >= qList.length) return;
-            await this.getAnswerList(qList[index].qaItemId);
-        }
-
-        for (let i = 0; i < this.state.noLocalQuestions; i++) {
+        for (let i = 0; i < this.state.noQuestions; i++) {
             questions.push(
-                <div className="mb-3" key={i}>
-                    <Form.Group className="mb-3" controlId="floatingTextarea">
+                <div className="mb-3" key={"question " + i}>
+                    <Form.Group className="mb-3">
                         <Form.Label>Question {i + 1}</Form.Label>
                         <Form.Control
+                            id={"question " + i}
                             type="text"
                             placeholder="What is your question?"
                             defaultValue={(qList.length > i ? qList[i].question : "")}
+                            onChange={this.updateQuestion}
                         />
                     </Form.Group>
 
-                    <Button
-                        className="loadAnswersButton"
-                        onClick={async () => {
-                            if (this.state.currentAnswerListIndex === -1)
-                            {
-                                this.setState({currentAnswerListIndex: i})
-                                await updateAnswerList(i);
-                            }
-                            else {
-                                this.setState({
-                                    currentAnswerListIndex: -1,
-                                    answerIsLoaded: false,
-                                });
-                            }
-                        }}>View Answers</Button>
+                    {this.buildAnswerList(qList[i].answerList)}
 
-                    <ListGroup>
-                        {this.state.currentAnswerListIndex === i ? this.buildAnswerList() : <></>}
-                    </ListGroup>
-
-                    {this.state.currentAnswerListIndex === i ?
-                        <Form.Control
-                            size="sm"
-                            type="text"
-                            placeholder="Enter new answer (Press Enter to add)"
-                            onKeyUp={this.onKeyUp}/> : <></>}
+                    <Form.Control
+                        id={"ans " + i}
+                        size="sm"
+                        type="text"
+                        placeholder="Enter new answer (Press Enter to add)"
+                        onKeyUp={this.onKeyUp}/>
                 </div>
             );
         }
@@ -163,59 +172,48 @@ export class QAForm extends React.Component {
         return (questions);
     }
 
-    render() {
-        const handleNoQuestionsChanged = (event) => {
-            this.setState({noLocalQuestions: event.target.value});
+    updateQuestion = (event) => {
+        const questionId = event.target.id.split(' ')[1];
+        const questionContent = event.target.value;
+        let currentQuestionList = Object.assign({}, this.state.questionList);
+
+        currentQuestionList[questionId].question = questionContent;
+    }
+
+    buildAnswerList(answerList) {
+        var answers = [];
+
+        for (let i = 0; i < answerList.length; i++) {
+            answers.push(
+                <ListGroup.Item key={answerList[i]}>{answerList[i]}</ListGroup.Item>
+            );
         }
 
-        const updateImageUrl = (event) => {
-            this.setState({imageUrl: event.target.value});
+        return (answers);
+    }
+
+    onKeyUp = (event) => {
+        const questionId = this.getQuestionIndexViaAnswerItemId(event.target.id);
+        const answer = event.target.value;
+
+        if (event.key === "Enter") {
+            this.addNewAnswer(questionId, answer);
+
+            // Clear answer box
+            const answerBox = document.getElementById(event.target.id);
+            answerBox.value = "";
         }
+    }
 
-        if (!this.state.dataIsLoaded)
-            return (<ReactLoading className="loadingIcon" type="spinningBubbles" color="blue" height="50%" width="50%" />)
+    addNewAnswer(questionId, answer) {
+        let currentQuestionList = Object.assign({}, this.state.questionList);
 
-        return (
-            <Col className="formContainer">
-                <TransformWrapper as={Row}>
-                    <TransformComponent>
-                        <img src={this.state.imageUrl} width="100%" alt="PreviewImage"/>
-                    </TransformComponent>
-                </TransformWrapper>
-                <Form as={Row} className="qaForm">
-                    <Row className="mb-3">
-                        <Form.Group as={Col} controlId="floatingTextarea">
-                            <Form.Label>Image URL</Form.Label>
-                            <Form.Control
-                                type="url"
-                                placeholder="Enter image URL"
-                                defaultValue={this.state.imageUrl}
-                                onChange={updateImageUrl}
-                            />
-                            <Form.Text className="text-muted">
-                            </Form.Text>
-                        </Form.Group>
+        currentQuestionList[questionId].answerList.push(answer);
 
-                        <Form.Group as={Col} controlId="floatingTextarea">
-                            <Form.Label>Number of questions</Form.Label>
-                            <Form.Control
-                                type="number"
-                                placeholder="Enter number of questions"
-                                defaultValue={this.state.questionList.length}
-                                onChange={handleNoQuestionsChanged}
-                            />
-                            <Form.Text className="text-muted">
-                            </Form.Text>
-                        </Form.Group>
-                    </Row>
+        this.setState({questionList: currentQuestionList});
+    }
 
-                    {this.buildQuestionList()}
-
-                    <Button variant="primary" type="submit" className="saveButton">
-                        Submit
-                    </Button>
-                </Form>
-            </Col>
-        );
-    };
+    getQuestionIndexViaAnswerItemId(answerItemId) {
+        return answerItemId.split(' ')[1];
+    }
 }

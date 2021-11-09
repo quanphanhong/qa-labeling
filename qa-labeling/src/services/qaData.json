@@ -1,0 +1,18 @@
+{
+    "data": [
+        {
+            "id": "uphD1wNfvmnzkV4S9zDR",
+            "createdAt": 1111,
+            "imgUrl": "https://post.medicalnewstoday.com/wp-content/uploads/sites/3/2020/02/322868_1100-800x825.jpg",
+            "questionList": [
+                {
+                    "question": "What is this?",
+                    "answerList": [
+                        "dog",
+                        "a dog"
+                    ]
+                }
+            ]
+        }
+    ]
+}

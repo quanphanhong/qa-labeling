@@ -9,8 +9,9 @@ import Modal from "react-bootstrap/Modal"
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {QAForm} from "../qaForm/qaForm"
-
-const axios = require ("axios");
+import {
+  fetchQAData
+} from "../../model/dataHandler";
 
 class App extends React.Component
 {
@@ -25,22 +26,11 @@ class App extends React.Component
     }
   }
 
-  async fetchAllCases() {
-    await axios({
-      method: "get",
-      url: "http://us-central1-question-answering-labeling.cloudfunctions.net/api/imported-data",
-      responseType: "stream",
-    })
-    .then((response) => {
-      this.setState({
-        cases: response.data,
-        dataIsLoaded: true,
-      });
+  componentDidMount() {
+    this.setState({
+      cases: fetchQAData(),
+      dataIsLoaded: true,
     });
-  }
-
-  async componentDidMount() {
-    await this.fetchAllCases();
   }
 
   loadQAFormDialog = (itemId) => {
@@ -56,13 +46,13 @@ class App extends React.Component
 
     return (
         cases.map(caseItem => (
-            <tr key={caseItem.itemId}>
-              <td>{caseItem.itemId}</td>
+            <tr key={caseItem.id}>
+              <td>{caseItem.id}</td>
               <td><img src={caseItem.imgUrl} alt="" className="itemImg"/></td>
-              <td>{timestampToString(caseItem.createdAt._seconds)}</td>
+              <td>{timestampToString(caseItem.createdAt)}</td>
               <td>
                 <div className="actions">
-                  <Button variant="warning" onClick={() => this.loadQAFormDialog(caseItem.itemId)}>Modify</Button>
+                  <Button variant="warning" onClick={() => this.loadQAFormDialog(caseItem.id)}>Modify</Button>
                   <Button variant="danger">Delete</Button>
                 </div>
               </td>
