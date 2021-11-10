@@ -34,6 +34,13 @@ class App extends React.Component
   }
 
   loadQAFormDialog = (itemId) => {
+    if (itemId === null)
+    {
+      // TODO Add item to DB and get its ID
+
+      itemId = "temp";
+    }
+
     this.setState({
       showQAForm: true,
       openedQAItemId: itemId
@@ -53,6 +60,7 @@ class App extends React.Component
               <td>
                 <div className="actions">
                   <Button variant="warning" onClick={() => this.loadQAFormDialog(caseItem.id)}>Modify</Button>
+                  <Button variant="info">Download file (In progress)</Button>
                   <Button variant="danger">Delete</Button>
                 </div>
               </td>
@@ -117,7 +125,7 @@ class App extends React.Component
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={() => handleFormOpened(false)}>Close</Button>
-            <Button variant="primary">Save Changes</Button>
+            <Button variant="primary">Download (In progress)</Button>
           </Modal.Footer>
         </Modal>
       </>
