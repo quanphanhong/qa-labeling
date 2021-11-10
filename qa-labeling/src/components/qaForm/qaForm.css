@@ -1,0 +1,28 @@
+.formContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    column-gap: 2rem;
+}
+
+.qaForm {
+    align-content: flex-start;
+    width: 50%;
+}
+
+.loadAnswersButton {
+    height: auto;
+    width: auto;
+}
+
+.saveButton {
+    left: 80% !important;
+    padding: 1rem !important;
+    height: fit-content !important;
+}
+
+.loadingIcon {
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+}
