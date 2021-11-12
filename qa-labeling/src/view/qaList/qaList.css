@@ -1,0 +1,26 @@
+.listContainer {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.itemList {
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    padding-top: 1.5rem;
+}
+
+.listNav {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.itemList {
+padding: 2rem;
+}
