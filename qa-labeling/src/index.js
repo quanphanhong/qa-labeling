@@ -4,6 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import { registerAuthChangedEvent } from './services/auth'
+
+registerAuthChangedEvent();
+
 ReactDOM.render(
   <React.StrictMode>
     <App />

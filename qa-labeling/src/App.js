@@ -1,5 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
+import { signInWithEmail } from './services/auth';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         >
           Learn React
         </a>
+        <button onClick={() => signInWithEmail("sample@abc.com", "123456")}>LOGIN</button>
       </header>
     </div>
   );
