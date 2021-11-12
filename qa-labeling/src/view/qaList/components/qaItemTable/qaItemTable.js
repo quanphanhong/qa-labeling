@@ -6,7 +6,7 @@ import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { getAllDocumentInCollection, getDocument } from "../../../../services/firestoreHandler";
+import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig"
 
 class QAItemTable extends React.Component
@@ -74,7 +74,7 @@ class QAItemTable extends React.Component
                         <div className="actions">
                         <Button
                             variant="warning"
-                            onClick={ () => this.loadQAFormDialog( tableCell.id ) }>Modify</Button>
+                            onClick={ () => this.props.loadQAItemEvent( tableCell.id ) }>Modify</Button>
                         <Button variant="info">Download file</Button>
                         <Button variant="danger">Delete</Button>
                         </div>

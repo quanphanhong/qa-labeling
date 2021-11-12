@@ -13,7 +13,8 @@ class QAList extends React.Component
         super( props );
 
         this.state = {
-          showQAForm: true
+          showQAForm: false,
+          currentQAItemId: null
         };
     }
 
@@ -24,7 +25,12 @@ class QAList extends React.Component
                 { this.buildHeader() }
                 { this.buildQAItemList() }
               </div>
-              { this.state.showQAForm ? <QAForm onClose={ this.closeForm } /> : <></> }
+              { this.state.showQAForm ?
+                  <QAForm
+                    qaItemId={ this.state.currentQAItemId }
+                    onClose={ this.closeForm }
+                  /> : <></>
+              }
             </>
         );
     }
@@ -33,7 +39,7 @@ class QAList extends React.Component
       return (
         <div className="listNav">
           <h1>Document Visual Question Answering Labeling</h1>
-          <Button variant="outline-primary">Import</Button>
+          <Button variant="outline-primary" onClick={ () => this.loadQAItemHandler() }>Insert</Button>
         </div>
       );
     }
@@ -42,10 +48,12 @@ class QAList extends React.Component
       return (
         <div className="itemList">
           <h2>List of imported items</h2>
-          <QAItemTable />
+          <QAItemTable loadQAItemEvent={ this.loadQAItemHandler } />
         </div>
       )
     }
+
+    loadQAItemHandler = ( qaItemId ) => this.setState({ currentQAItemId: qaItemId, showQAForm: true });
 
     closeForm = () => {
       this.setState({ showQAForm: false });

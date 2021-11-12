@@ -1,3 +1,4 @@
 export const config = {
-    referenceToAllQAItem: "data"
+    referenceToAllQAItem: "data",
+    referenceToQuestionList: "data/{qaItemId}/questionsList"
 }

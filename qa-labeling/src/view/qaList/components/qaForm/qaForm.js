@@ -3,6 +3,7 @@ import React from 'react';
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal"
 import 'bootstrap/dist/css/bootstrap.min.css';
+import QuestionList from './questionList';
 
 class QAForm extends React.Component
 {
@@ -10,26 +11,45 @@ class QAForm extends React.Component
         super( props );
 
         this.state = {
-            _closeFormCallback: () => props.onClose
+            qaItemId: props.qaItemId
         }
         console.log(props);
     }
 
     render() {
-        return (
-            <Modal fullscreen="xxl-down">
-              <Modal.Header closeButton onAbort={() => this.state._closeFormCallback}>
-                <Modal.Title>Add/Modify QA item</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
+      return (
+        <Modal show={ true } fullscreen="xxl-down">
+          { this.buildFormHeader() }
+          { this.buildFormBody() }
+          { this.buildFormFooter() }
+        </Modal>
+      );
+    }
 
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={() => this.state._closeFormCallback}>Close</Button>
-                <Button variant="primary">Download (In progress)</Button>
-              </Modal.Footer>
-            </Modal>
-        );
+    buildFormHeader() {
+      return (
+        <Modal.Header closeButton onAbort={ () => this.props.onClose() }>
+          <Modal.Title>Add/Modify QA item</Modal.Title>
+        </Modal.Header>
+      );
+    }
+
+    buildFormBody() {
+      return (
+        <Modal.Body>
+          <p>{ this.state.qaItemId }</p>
+          <QuestionList qaItemId={ this.state.qaItemId } />
+        </Modal.Body>
+      );
+    }
+
+    buildFormFooter() {
+      return (
+        <Modal.Footer>
+          <Button variant="secondary" onClick={ () => this.props.onClose() }>Close</Button>
+          <Button variant="primary">Download (In progress)</Button>
+        </Modal.Footer>
+      );
     }
 }
 
