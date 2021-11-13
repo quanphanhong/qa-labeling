@@ -1,5 +1,6 @@
 import React from 'react';
 import "./qaForm.css";
+import "./questionList.css";
 
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
@@ -7,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig";
+import AnswerList from './answerList';
 
 class QuestionList extends React.Component {
     constructor( props ) {
@@ -19,7 +21,9 @@ class QuestionList extends React.Component {
     }
 
     componentDidMount() {
-        if ( !( this.props.qaItemId === null | undefined ) ) {
+        const questionIsValid = () => this.props.qaItemId !== null | undefined;
+
+        if ( questionIsValid ) {
             this.fetchQuestionList()
                 .then( () => this.initializeComponents() )
         }
@@ -71,8 +75,10 @@ class QuestionList extends React.Component {
 
         for ( let i = 0; i < questionList.length; i++ ) {
             const renderingQuestionItem = (
-                <div key={ config.questionKeyPrefix + i }>
+                <div className="questionFormGroup" key={ config.questionKeyPrefix + i }>
                     { this.buildQuestionBox( i + 1 ) }
+
+                    <AnswerList qaItemId={ this.props.qaItemId } questionId={ questionList[ i ].id }/>
                 </div>
             );
 
