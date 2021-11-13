@@ -1,10 +1,8 @@
 import React from 'react';
+import "./qaForm.css";
 
 import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import ListGroup from "react-bootstrap/ListGroup";
-import Button from "react-bootstrap/Button";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
@@ -15,14 +13,21 @@ class QuestionList extends React.Component {
         super( props );
 
         this.state = {
+            dataIsLoaded: false,
             questions: []
         };
     }
 
     componentDidMount() {
         if ( !( this.props.qaItemId === null | undefined ) ) {
-            this.fetchQuestionList();
+            this.fetchQuestionList()
+                .then( () => this.initializeComponents() )
         }
+    }
+
+    initializeComponents() {
+        const questionCountElement = document.getElementById( "questionCount" );
+        questionCountElement.defaultValue = this.state.questions.length;
     }
 
     /**
@@ -33,14 +38,30 @@ class QuestionList extends React.Component {
         const questionList = await getAllDocumentInCollection(
             config.referenceToQuestionList.replace( "{qaItemId}", this.props.qaItemId ) )
 
-        this.setState({ questions: questionList });
+        this.setState({
+            questions: questionList,
+            dataIsLoaded: true
+        });
     }
 
     render() {
         return (
             <>
+                { this.buildQuestionCount() }
                 { this.buildQuestionAndAnswerList() }
             </>
+        );
+    }
+
+    buildQuestionCount() {
+        return (
+            <Form.Group as={Col} className="formItem">
+                <Form.Label>Number of questions</Form.Label>
+                <Form.Control
+                    id="questionCount"
+                    type="number"
+                    placeholder="Enter number of questions" />
+            </Form.Group>
         );
     }
 
@@ -63,7 +84,7 @@ class QuestionList extends React.Component {
 
     buildQuestionBox( questionIndex ) {
         return (
-            <Form.Group className="mb-3">
+            <Form.Group className="formItem">
                 <Form.Label>Question { questionIndex }</Form.Label>
                 <Form.Control
                     id={ config.questionBoxKeyPrefix + questionIndex }
