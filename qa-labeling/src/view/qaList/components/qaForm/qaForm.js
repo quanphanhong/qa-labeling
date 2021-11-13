@@ -37,7 +37,6 @@ class QAForm extends React.Component
     buildFormBody() {
       return (
         <Modal.Body>
-          <p>{ this.state.qaItemId }</p>
           <QuestionList qaItemId={ this.state.qaItemId } />
         </Modal.Body>
       );

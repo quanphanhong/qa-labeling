@@ -29,6 +29,7 @@ class QuestionList extends React.Component {
      * Get all questions from a QA item
      */
     async fetchQuestionList() {
+        // TODO bring {qaItemId} to config!
         const questionList = await getAllDocumentInCollection(
             config.referenceToQuestionList.replace( "{qaItemId}", this.props.qaItemId ) )
 
@@ -37,8 +38,49 @@ class QuestionList extends React.Component {
 
     render() {
         return (
-            <p>Okay</p>
+            <>
+                { this.buildQuestionAndAnswerList() }
+            </>
         );
+    }
+
+    buildQuestionAndAnswerList() {
+        const questionList = this.state.questions;
+        const renderingQuestionList = [];
+
+        for ( let i = 0; i < questionList.length; i++ ) {
+            const renderingQuestionItem = (
+                <div key={ config.questionKeyPrefix + i }>
+                    { this.buildQuestionBox( i + 1 ) }
+                </div>
+            );
+
+            renderingQuestionList.push( renderingQuestionItem );
+        }
+
+        return renderingQuestionList;
+    }
+
+    buildQuestionBox( questionIndex ) {
+        return (
+            <Form.Group className="mb-3">
+                <Form.Label>Question { questionIndex }</Form.Label>
+                <Form.Control
+                    id={ config.questionBoxKeyPrefix + questionIndex }
+                    type="text"
+                    placeholder="What is your question?"
+                    defaultValue={ this.getQuestionBoxDefaultValue( questionIndex - 1 ) }
+                />
+            </Form.Group>
+        );
+    }
+
+    getQuestionBoxDefaultValue( questionIndex ) {
+        if ( this.state.questions.length > questionIndex ) {
+            return this.state.questions[ questionIndex ].data.question;
+        } else {
+            return "";
+        }
     }
 }
 
