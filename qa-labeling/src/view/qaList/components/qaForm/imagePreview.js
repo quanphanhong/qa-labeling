@@ -22,7 +22,7 @@ class ImagePreview extends React.Component
     componentDidMount() {
         const qaItemIsValid = () => this.props.qaItemId !== null | undefined;
 
-        if ( qaItemIsValid ) {
+        if ( qaItemIsValid === true ) {
             this.fetchQAItem()
                 .then( () => this.initializeComponents() )
         }

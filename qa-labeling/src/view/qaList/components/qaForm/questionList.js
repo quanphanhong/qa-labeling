@@ -24,7 +24,7 @@ class QuestionList extends React.Component {
     componentDidMount() {
         const questionIsValid = () => this.props.qaItemId !== null | undefined;
 
-        if ( questionIsValid ) {
+        if ( questionIsValid === true ) {
             this.fetchQuestionList()
                 .then( () => this.initializeComponents() )
         }

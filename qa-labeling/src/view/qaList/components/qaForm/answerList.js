@@ -24,7 +24,7 @@ class AnswerList extends React.Component
                 this.props.questionId !== null | undefined );
         }
 
-        if ( answerItemIsValid ) {
+        if ( answerItemIsValid === true ) {
             this.fetchAnswerList();
         }
     }
