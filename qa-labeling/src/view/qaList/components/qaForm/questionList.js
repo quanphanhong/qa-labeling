@@ -3,7 +3,6 @@ import "./qaForm.css";
 import "./questionList.css";
 
 import Form from "react-bootstrap/Form";
-import Col from "react-bootstrap/Col";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
@@ -16,7 +15,9 @@ class QuestionList extends React.Component {
 
         this.state = {
             dataIsLoaded: false,
-            questions: []
+            questions: [],
+            reservedQuestions: [],
+            questionCount: null
         };
     }
 
@@ -44,6 +45,7 @@ class QuestionList extends React.Component {
 
         this.setState({
             questions: questionList,
+            questionCount: questionList.length,
             dataIsLoaded: true
         });
     }
@@ -58,13 +60,54 @@ class QuestionList extends React.Component {
     }
 
     buildQuestionCount() {
+        const handleQuestionCountChanged = ( event ) => {
+            const lastQuestionCount = this.state.questionCount;
+            const currentQuestionCount = event.target.value;
+
+            const questions = this.state.questions;
+            const reservedQuestions = this.state.reservedQuestions;
+
+            // TODO Add more strict check to this!
+            if ( lastQuestionCount === null || currentQuestionCount < 0 ) return;
+
+            if ( lastQuestionCount < currentQuestionCount ) {
+                if ( reservedQuestions.length > 0 ) {
+                    const poppedReservedQuestion = reservedQuestions.pop();
+
+                    questions.push( poppedReservedQuestion );
+                    this.setState({ reservedQuestions: reservedQuestions })
+                } else {
+                    questions.push({
+                        id: null,
+                        data: {
+                            question: "",
+                            answers: []
+                        }
+                    });
+                }
+            } else {
+                const removedQuestion = questions.pop();
+
+                // TODO replace data field with empty field
+
+                reservedQuestions.push( removedQuestion );
+                this.setState({ reservedQuestions: reservedQuestions });
+            }
+
+            this.setState({
+                questions: questions,
+                questionCount: questions.length
+            })
+        }
+
         return (
-            <Form.Group as={Col} className="formItem">
+            <Form.Group className="formItem">
                 <Form.Label>Number of questions</Form.Label>
                 <Form.Control
                     id="questionCount"
                     type="number"
-                    placeholder="Enter number of questions" />
+                    placeholder="Enter number of questions"
+                    onChange={ handleQuestionCountChanged } />
             </Form.Group>
         );
     }
