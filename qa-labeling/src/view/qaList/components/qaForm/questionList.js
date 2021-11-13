@@ -50,10 +50,10 @@ class QuestionList extends React.Component {
 
     render() {
         return (
-            <>
+            <div>
                 { this.buildQuestionCount() }
                 { this.buildQuestionAndAnswerList() }
-            </>
+            </div>
         );
     }
 

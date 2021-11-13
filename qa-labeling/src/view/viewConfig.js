@@ -4,5 +4,6 @@ export const config = {
     questionKeyPrefix: "_question",
     questionBoxKeyPrefix: "_questionBox",
     referenceToAnswerList: "data/{qaItemId}/questionsList/{questionId}/answersList",
-    answerItemKeyPrefix: "_answerItem"
+    answerItemKeyPrefix: "_answerItem",
+    referenceToQAItem: "data/{qaItemId}"
 }

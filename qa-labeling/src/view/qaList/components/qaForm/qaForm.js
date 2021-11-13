@@ -3,7 +3,9 @@ import React from 'react';
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal"
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import QuestionList from './questionList';
+import ImagePreview from './imagePreview';
 
 class QAForm extends React.Component
 {
@@ -37,7 +39,10 @@ class QAForm extends React.Component
     buildFormBody() {
       return (
         <Modal.Body>
-          <QuestionList qaItemId={ this.state.qaItemId } />
+          <div className="modalBodyContainer">
+            <ImagePreview className="imagePreview" qaItemId={ this.state.qaItemId } />
+            <QuestionList className="questionForm" qaItemId={ this.state.qaItemId } />
+          </div>
         </Modal.Body>
       );
     }

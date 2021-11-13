@@ -1,4 +1,22 @@
 .formItem {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
+}
+
+.modalBodyContainer {
+    display: grid;
+    grid-template-columns: repeat( 2, 1fr );
+    grid-template-rows: auto;
+}
+
+.imagePreview {
+    grid-row: 1;
+    margin: 1rem;
+}
+
+.questionForm {
+    grid-row: 2;
+    margin: 1rem;
 }

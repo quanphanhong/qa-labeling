@@ -72,11 +72,11 @@ class QAItemTable extends React.Component
                     <td>{ tableCell.data.createdAt.seconds }</td>
                     <td>
                         <div className="actions">
-                        <Button
-                            variant="warning"
-                            onClick={ () => this.props.loadQAItemEvent( tableCell.id ) }>Modify</Button>
-                        <Button variant="info">Download file</Button>
-                        <Button variant="danger">Delete</Button>
+                            <Button
+                                variant="warning"
+                                onClick={ () => this.props.loadQAItemEvent( tableCell.id ) }>Modify</Button>
+                            <Button variant="info">Download file</Button>
+                            <Button variant="danger">Delete</Button>
                         </div>
                     </td>
                 </tr>
