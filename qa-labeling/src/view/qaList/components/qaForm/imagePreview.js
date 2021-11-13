@@ -20,12 +20,8 @@ class ImagePreview extends React.Component
     }
 
     componentDidMount() {
-        const qaItemIsValid = () => this.props.qaItemId !== null | undefined;
-
-        if ( qaItemIsValid === true ) {
-            this.fetchQAItem()
-                .then( () => this.initializeComponents() )
-        }
+        this.fetchQAItem()
+            .then( () => this.initializeComponents() )
     }
 
     initializeComponents() {
@@ -37,6 +33,8 @@ class ImagePreview extends React.Component
      * Get all questions from a QA item
      */
     async fetchQAItem() {
+        if ( this.props.qaItemId == null ) return;
+
         const qaItem = await getDocument(
             config.referenceToQAItem.replace( "{qaItemId}", this.props.qaItemId ) )
 

@@ -19,20 +19,17 @@ class AnswerList extends React.Component
     }
 
     componentDidMount() {
-        const answerItemIsValid = () => {
-            return ( ( this.props.qaItemId !== null | undefined)  &&
-                this.props.questionId !== null | undefined );
-        }
-
-        if ( answerItemIsValid === true ) {
-            this.fetchAnswerList();
-        }
+        this.fetchAnswerList();
     }
 
     /**
      * Get all answers from a question
      */
      async fetchAnswerList() {
+        if ( ( this.props.qaItemId == null ) ||
+            ( this.props.questionId == null ) )
+            return;
+
         const answerList = await getAllDocumentInCollection(
             config.referenceToAnswerList
                 .replace( "{qaItemId}", this.props.qaItemId )

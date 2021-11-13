@@ -14,25 +14,26 @@ class QAList extends React.Component
 
         this.state = {
           showQAForm: false,
-          currentQAItemId: null
+          currentQAItemId: null,
+          isInserting: false
         };
     }
 
     render() {
-        return (
-            <>
-              <div className="listContainer">
-                { this.buildHeader() }
-                { this.buildQAItemList() }
-              </div>
-              { this.state.showQAForm ?
-                  <QAForm
-                    qaItemId={ this.state.currentQAItemId }
-                    onClose={ this.closeForm }
-                  /> : <></>
-              }
-            </>
-        );
+      return (
+          <>
+            <div className="listContainer">
+              { this.buildHeader() }
+              { this.buildQAItemList() }
+            </div>
+            { this.state.showQAForm ?
+                <QAForm
+                  qaItemId={ this.state.currentQAItemId }
+                  onClose={ this.closeForm }
+                /> : <></>
+            }
+          </>
+      );
     }
 
     buildHeader() {

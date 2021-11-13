@@ -22,12 +22,8 @@ class QuestionList extends React.Component {
     }
 
     componentDidMount() {
-        const questionIsValid = () => this.props.qaItemId !== null | undefined;
-
-        if ( questionIsValid === true ) {
-            this.fetchQuestionList()
-                .then( () => this.initializeComponents() )
-        }
+        this.fetchQuestionList()
+            .then( () => this.initializeComponents() )
     }
 
     initializeComponents() {
@@ -40,6 +36,8 @@ class QuestionList extends React.Component {
      */
     async fetchQuestionList() {
         // TODO bring {qaItemId} to config!
+        if ( this.props.qaItemId == null ) return;
+
         const questionList = await getAllDocumentInCollection(
             config.referenceToQuestionList.replace( "{qaItemId}", this.props.qaItemId ) )
 
@@ -68,7 +66,7 @@ class QuestionList extends React.Component {
             const reservedQuestions = this.state.reservedQuestions;
 
             // TODO Add more strict check to this!
-            if ( lastQuestionCount === null || currentQuestionCount < 0 ) return;
+            if ( ( lastQuestionCount == null && this.props.qaItemId != null ) || currentQuestionCount < 0 ) return;
 
             if ( lastQuestionCount < currentQuestionCount ) {
                 if ( reservedQuestions.length > 0 ) {
@@ -97,7 +95,7 @@ class QuestionList extends React.Component {
             this.setState({
                 questions: questions,
                 questionCount: questions.length
-            })
+            });
         }
 
         return (
