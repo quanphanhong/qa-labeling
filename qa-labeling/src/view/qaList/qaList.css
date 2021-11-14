@@ -1,0 +1,44 @@
+.listContainer {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.itemList {
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    padding-top: 1.5rem;
+}
+
+.listNav {
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    justify-content: flex-start;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+
+    background-color: black;
+}
+
+.titleText {
+    color: white;
+}
+
+.insertButton {
+    height: fit-content;
+    margin: 1rem;
+}
+
+.itemList {
+    padding: 2rem;
+}

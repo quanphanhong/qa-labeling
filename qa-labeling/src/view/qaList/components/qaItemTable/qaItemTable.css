@@ -1,0 +1,20 @@
+.itemTable {
+    color: white !important;
+    padding: 2rem;
+}
+
+.itemImg {
+    height: 100px;
+    border-radius: 8px;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 1rem;
+    align-items: center;
+}
+
+.actionsCell {
+    width: 100px;
+}
