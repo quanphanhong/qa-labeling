@@ -9,6 +9,7 @@ import QuestionList from './questionList';
 import ImagePreview from './imagePreview';
 import { createDocument, deleteDocument, getServerTimestamp, updateDocument } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig";
+import { downloadJSONFile } from '../../../../services/downloadHandler';
 
 class QAForm extends React.Component
 {
@@ -18,6 +19,7 @@ class QAForm extends React.Component
         this.state = {
             qaItemId: props.qaItemId,
             imageURL: "",
+            imageName: "",
             questionList: [],
             deletedQuestions: [],
             reload: false
@@ -65,8 +67,8 @@ class QAForm extends React.Component
       );
     }
 
-    updateImageURL = ( imageURL ) => {
-      this.setState({ imageURL: imageURL });
+    updateImageURL = ( imageURL, imageName ) => {
+      this.setState({ imageURL: imageURL, imageName: imageName });
     }
 
     updateQuestionList = ( questionList, reservedQuestions ) => {
@@ -88,34 +90,26 @@ class QAForm extends React.Component
 
     async saveQAItem() {
       const imageURL = this.state.imageURL;
+      const imageName = this.state.imageName;
       const questionList = this.state.questionList;
 
       const downloadedData = {
-        imageURL: imageURL,
+        image: {
+          imageName: imageName,
+          imageURL: imageURL
+        },
         questionList: questionList
       };
 
       const jsonString = JSON.stringify( downloadedData );
 
-      await this.downloadFile( jsonString );
-  }
-
-  downloadFile = async ( data ) => {
-    const fileName = this.state.qaItemId;
-    const blob = new Blob( [ data ], { type: 'application/json' });
-    const href = await URL.createObjectURL( blob );
-    const link = document.createElement( 'a' );
-    link.href = href;
-    link.download = fileName + ".json";
-    document.body.appendChild( link );
-    link.click();
-    document.body.removeChild( link );
+      await downloadJSONFile( jsonString, this.state.imageName );
   }
 
     async handleSaving() {
       if ( this.state.qaItemId == null ) {
         const qaItemId = await createDocument( config.referenceToAllQAItem,
-          { createdAt: getServerTimestamp(), imgUrl: "" } );
+          { createdAt: getServerTimestamp(), imgUrl: "", imageName: "" } );
 
         this.setState({ qaItemId: qaItemId });
         this.saveInfoToQAItem();
@@ -163,7 +157,7 @@ class QAForm extends React.Component
 
       updateDocument(
         config.referenceToQAItem.replace( "{qaItemId}", this.state.qaItemId ),
-        { imgUrl: this.state.imageURL }
+        { imgUrl: this.state.imageURL, imageName: this.state.imageName }
       );
     }
 
