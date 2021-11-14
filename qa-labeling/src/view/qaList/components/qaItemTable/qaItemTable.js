@@ -63,6 +63,7 @@ class QAItemTable extends React.Component
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Image name</th>
                     <th>Preview</th>
                     <th>Created at</th>
                     <th>Actions</th>
@@ -78,6 +79,7 @@ class QAItemTable extends React.Component
             tableDataRow.map( tableCell => (
                 <tr key={ tableCell.id }>
                     <td>{ tableCell.id }</td>
+                    <td>{ tableCell.data.imageName }</td>
                     <td><img src={ tableCell.data.imgUrl } alt="" className="itemImg"/></td>
                     <td>{ timestampToString(tableCell.data.createdAt.seconds) }</td>
                     <td className="actionsCell">

@@ -15,7 +15,8 @@ class ImagePreview extends React.Component
         super( props );
 
         this.state = {
-            imageUrl: ""
+            imageUrl: "",
+            imageName: ""
         };
     }
 
@@ -23,13 +24,16 @@ class ImagePreview extends React.Component
         this.fetchQAItem()
             .then( () => {
                 this.initializeComponents();
-                this.props.onURLUpdated( this.state.imageUrl );
+                this.props.onURLUpdated( this.state.imageUrl, this.state.imageName );
             } )
     }
 
     initializeComponents() {
         const imagePreviewControl = document.getElementById( "imagePreviewControl" );
         imagePreviewControl.defaultValue = this.state.imageUrl;
+
+        const imageNameControl = document.getElementById( "imageNameControl" );
+        imageNameControl.defaultValue = this.state.imageName;
     }
 
     /**
@@ -41,17 +45,42 @@ class ImagePreview extends React.Component
         const qaItem = await getDocument(
             config.referenceToQAItem.replace( "{qaItemId}", this.props.qaItemId ) )
 
-        this.setState({ imageUrl: qaItem.imgUrl });
+        this.setState({
+            imageUrl: qaItem.imgUrl,
+            imageName: qaItem.imageName
+        });
     }
 
     render() {
         return (
             <div>
+                { this.buildImageNameUpdater() }
                 { this.buildImageURLUpdater() }
                 { this.buildImagePreview() }
             </div>
         );
     }
+
+    buildImageNameUpdater() {
+        return (
+            <Form.Group className="formItem">
+                <Form.Label>Image name</Form.Label>
+                <Form.Control
+                    id="imageNameControl"
+                    type="text"
+                    placeholder="Enter image name"
+                    onChange={ () => this.updateImageName() }
+                />
+            </Form.Group>
+        );
+    }
+
+    updateImageName = (event) => {
+        const imageNameControl = document.getElementById( "imageNameControl" );
+
+        this.setState({ imageName: imageNameControl.value });
+        this.props.onURLUpdated( this.state.imageUrl, imageNameControl.value );
+    };
 
     buildImageURLUpdater() {
         return (
@@ -67,12 +96,23 @@ class ImagePreview extends React.Component
         );
     }
 
-    updateImageURL = (event) => {
+    updateImageURL = ( event ) => {
         const imagePreviewControl = document.getElementById( "imagePreviewControl" );
+        const imageNameControl = document.getElementById( "imageNameControl" );
 
-        this.setState({ imageUrl: imagePreviewControl.value });
-        this.props.onURLUpdated( imagePreviewControl.value );
+        const imageName = this.getImageNameFromURL( imagePreviewControl.value );
+        imageNameControl.value = imageName;
+
+        this.setState({
+            imageUrl: imagePreviewControl.value,
+            imageName: imageName
+        });
+        this.props.onURLUpdated( imagePreviewControl.value, imageName );
     };
+
+    getImageNameFromURL( imageURL ) {
+        return imageURL.substring( imageURL.lastIndexOf('/') + 1 );
+    }
 
     buildImagePreview() {
         return (
