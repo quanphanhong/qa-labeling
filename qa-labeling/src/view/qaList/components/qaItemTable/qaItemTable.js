@@ -6,7 +6,7 @@ import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
+import { getAllDocumentInCollection, deleteDocument } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig"
 import { timestampToString } from "./timestampHandler";
 
@@ -23,6 +23,15 @@ class QAItemTable extends React.Component
 
     componentDidMount() {
         this.loadTableContent();
+    }
+
+    async loadTableContent() {
+        const tableItemList = await getAllDocumentInCollection( config.referenceToAllQAItem );
+
+        this.setState({
+            tableDataIsLoaded: true,
+            tableData: tableItemList
+        });
     }
 
     render() {
@@ -77,7 +86,9 @@ class QAItemTable extends React.Component
                                 variant="warning"
                                 onClick={ () => this.props.loadQAItemEvent( tableCell.id ) }>Modify</Button>
                             <Button variant="info">Download</Button>
-                            <Button variant="danger">Delete</Button>
+                            <Button
+                                variant="danger"
+                                onClick={ () => this.handleDeleteQAItem( tableCell.id ) }>Delete</Button>
                         </div>
                     </td>
                 </tr>
@@ -85,13 +96,9 @@ class QAItemTable extends React.Component
         );
     }
 
-    async loadTableContent() {
-        const tableItemList = await getAllDocumentInCollection( config.referenceToAllQAItem );
-
-        this.setState({
-            tableDataIsLoaded: true,
-            tableData: tableItemList
-        });
+    handleDeleteQAItem( qaItemId ) {
+        deleteDocument( config.referenceToQAItem.replace( "{qaItemId}", qaItemId ) );
+        this.props.onReloadRequested();
     }
 }
 

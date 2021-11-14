@@ -15,11 +15,16 @@ class QAList extends React.Component
         this.state = {
           showQAForm: false,
           currentQAItemId: null,
-          isInserting: false
+          reload: false
         };
     }
 
     render() {
+      if ( this.state.reload === true ) {
+        this.setState({ reload: false });
+        return (<></>);
+      }
+
       return (
           <>
             <div className="listContainer">
@@ -29,36 +34,39 @@ class QAList extends React.Component
             { this.state.showQAForm ?
                 <QAForm
                   qaItemId={ this.state.currentQAItemId }
+                  onReloadRequested={ this.reload }
                   onClose={ this.closeForm }
                 /> : <></>
             }
           </>
       );
-    }
+  }
 
-    buildHeader() {
-      return (
-        <div className="listNav">
-          <h1>Document Visual Question Answering Labeling</h1>
-          <Button variant="outline-primary" onClick={ () => this.loadQAItemHandler() }>Insert</Button>
-        </div>
-      );
-    }
+  buildHeader() {
+    return (
+      <div className="listNav">
+        <h1>Document Visual Question Answering Labeling</h1>
+        <Button variant="outline-primary" onClick={ () => this.loadQAItemHandler() }>Insert</Button>
+      </div>
+    );
+  }
 
-    buildQAItemList() {
-      return (
-        <div className="itemList">
-          <h2>List of imported items</h2>
-          <QAItemTable loadQAItemEvent={ this.loadQAItemHandler } />
-        </div>
-      )
-    }
+  buildQAItemList() {
+    return (
+      <div className="itemList">
+        <h2>List of imported items</h2>
+        <QAItemTable loadQAItemEvent={ this.loadQAItemHandler } onReloadRequested={ this.reload } />
+      </div>
+    )
+  }
 
-    loadQAItemHandler = ( qaItemId ) => this.setState({ currentQAItemId: qaItemId, showQAForm: true });
+  loadQAItemHandler = ( qaItemId ) => this.setState({ currentQAItemId: qaItemId, showQAForm: true });
 
-    closeForm = () => {
-      this.setState({ showQAForm: false });
-    }
+  reload = () => this.setState({ reload: true });
+
+  closeForm = () => {
+    this.setState({ showQAForm: false });
+  }
 }
 
 export default QAList;

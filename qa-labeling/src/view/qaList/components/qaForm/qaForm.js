@@ -175,7 +175,9 @@ class QAForm extends React.Component
         questionList: [],
         deletedQuestions: [],
         reload: true
-      })
+      });
+
+      this.props.onReloadRequested();
     }
 }
 
