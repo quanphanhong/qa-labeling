@@ -4,6 +4,7 @@ import "./qaItemTable.css";
 import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { getAllDocumentInCollection, deleteDocument, getDocument } from "../../../../services/firestoreHandler";
@@ -18,7 +19,9 @@ class QAItemTable extends React.Component
 
         this.state = {
             tableDataIsLoaded: false,
-            tableData: []
+            tableData: [],
+            showDeletePrompt: false,
+            onDeleteItemId: ""
         }
     }
 
@@ -45,6 +48,7 @@ class QAItemTable extends React.Component
                         { this.buildTableBody() }
                     </tbody>
                 </Table>
+                { this.buildDeletePrompt() }
             </>
         );
     }
@@ -100,6 +104,23 @@ class QAItemTable extends React.Component
             ))
         );
     }
+
+    buildDeletePrompt() {
+        return (
+            <Modal show={ this.state.showDeletePrompt }>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={ () => this.deleteQAItem() }>Yes</Button>
+                    <Button variant="primary" onClick={ this.handleNotDeleteQAItem }>No</Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
+
+    handleNotDeleteQAItem = () => this.setState({ showDeletePrompt: false, onDeleteItemId: "" });
 
     async handleDownloadQAItem( qaItemId ) {
         var downloadedData = {};
@@ -161,7 +182,18 @@ class QAItemTable extends React.Component
     }
 
     handleDeleteQAItem( qaItemId ) {
-        deleteDocument( config.referenceToQAItem.replace( "{qaItemId}", qaItemId ) );
+        this.setState({
+            showDeletePrompt: true,
+            onDeleteItemId: qaItemId
+        })
+    }
+
+    deleteQAItem() {
+        deleteDocument( config.referenceToQAItem.replace( "{qaItemId}", this.state.onDeleteItemId ) );
+        this.setState({
+            showDeletePrompt: false,
+            onDeleteItemId: ""
+        });
         this.props.onReloadRequested();
     }
 }
