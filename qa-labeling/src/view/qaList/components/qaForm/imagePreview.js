@@ -75,7 +75,7 @@ class ImagePreview extends React.Component
         return (
             <TransformWrapper className="imagePreviewItem">
                 <TransformComponent>
-                    <img src={ this.state.imageUrl } width="50%" alt="PreviewImage"/>
+                    <img src={ this.state.imageUrl } width="100%" alt="PreviewImage"/>
                 </TransformComponent>
             </TransformWrapper>
         );
