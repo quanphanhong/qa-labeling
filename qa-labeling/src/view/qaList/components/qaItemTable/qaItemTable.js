@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig"
+import { timestampToString } from "./timestampHandler";
 
 class QAItemTable extends React.Component
 {
@@ -69,7 +70,7 @@ class QAItemTable extends React.Component
                 <tr key={ tableCell.id }>
                     <td>{ tableCell.id }</td>
                     <td><img src={ tableCell.data.imgUrl } alt="" className="itemImg"/></td>
-                    <td>{ tableCell.data.createdAt.seconds }</td>
+                    <td>{ timestampToString(tableCell.data.createdAt.seconds) }</td>
                     <td>
                         <div className="actions">
                             <Button

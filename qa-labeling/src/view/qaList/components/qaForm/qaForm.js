@@ -89,7 +89,7 @@ class QAForm extends React.Component
     async handleSaving() {
       if ( this.state.qaItemId == null ) {
         const qaItemId = await createDocument( config.referenceToAllQAItem,
-          { createdAt: getServerTimestamp() } );
+          { createdAt: getServerTimestamp(), imgUrl: "" } );
 
         this.setState({ qaItemId: qaItemId });
         this.saveInfoToQAItem();
@@ -130,7 +130,8 @@ class QAForm extends React.Component
     }
 
     updateImage() {
-      console.log(config.referenceToQAItem.replace( "{qaItemId}", this.state.qaItemId));
+      if ( this.state.imageURL === "" ) return;
+
       updateDocument(
         config.referenceToQAItem.replace( "{qaItemId}", this.state.qaItemId ),
         { imgUrl: this.state.imageURL }
