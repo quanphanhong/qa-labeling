@@ -21,7 +21,10 @@ class ImagePreview extends React.Component
 
     componentDidMount() {
         this.fetchQAItem()
-            .then( () => this.initializeComponents() )
+            .then( () => {
+                this.initializeComponents();
+                this.props.onURLUpdated( this.state.imageUrl );
+            } )
     }
 
     initializeComponents() {

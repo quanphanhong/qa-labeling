@@ -80,11 +80,37 @@ class QAForm extends React.Component
       return (
         <Modal.Footer>
           <Button variant="secondary" onClick={ () => this.props.onClose() }>Close</Button>
-          <Button variant="primary">Download (In progress)</Button>
+          <Button variant="primary" onClick={ () => this.saveQAItem() }>Download</Button>
           <Button variant="primary" onClick={ () => this.handleSaving() }>Save</Button>
         </Modal.Footer>
       );
     }
+
+    async saveQAItem() {
+      const imageURL = this.state.imageURL;
+      const questionList = this.state.questionList;
+
+      const downloadedData = {
+        imageURL: imageURL,
+        questionList: questionList
+      };
+
+      const jsonString = JSON.stringify( downloadedData );
+
+      await this.downloadFile( jsonString );
+  }
+
+  downloadFile = async ( data ) => {
+    const fileName = this.state.qaItemId;
+    const blob = new Blob( [ data ], { type: 'application/json' });
+    const href = await URL.createObjectURL( blob );
+    const link = document.createElement( 'a' );
+    link.href = href;
+    link.download = fileName + ".json";
+    document.body.appendChild( link );
+    link.click();
+    document.body.removeChild( link );
+  }
 
     async handleSaving() {
       if ( this.state.qaItemId == null ) {

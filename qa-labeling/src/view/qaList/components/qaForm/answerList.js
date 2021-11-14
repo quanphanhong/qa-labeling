@@ -21,7 +21,8 @@ class AnswerList extends React.Component
     }
 
     componentDidMount() {
-        this.fetchAnswerList();
+        this.fetchAnswerList()
+            .then( () => this.sendAnswerUpdate() );
     }
 
     /**

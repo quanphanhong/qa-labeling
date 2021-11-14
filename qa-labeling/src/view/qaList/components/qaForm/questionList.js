@@ -23,7 +23,10 @@ class QuestionList extends React.Component {
 
     componentDidMount() {
         this.fetchQuestionList()
-            .then( () => this.initializeComponents() )
+            .then( () => {
+                this.initializeComponents();
+                this.sendQuestionUpdate();
+            } );
     }
 
     initializeComponents() {
