@@ -175,7 +175,7 @@ class QuestionList extends React.Component {
     }
 
     sendQuestionUpdate() {
-        this.props.onQuestionUpdated( this.state.questions );
+        this.props.onQuestionUpdated( this.state.questions, this.state.reservedQuestions );
     }
 }
 

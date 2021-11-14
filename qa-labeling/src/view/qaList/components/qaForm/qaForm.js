@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import QuestionList from './questionList';
 import ImagePreview from './imagePreview';
-import { createDocument, getServerTimestamp, updateDocument } from "../../../../services/firestoreHandler";
+import { createDocument, deleteDocument, getServerTimestamp, updateDocument } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig";
 
 class QAForm extends React.Component
@@ -104,7 +104,7 @@ class QAForm extends React.Component
 
       this.updateImage();
 
-      // There's no modifications
+      // No modifications
       if ( questionList === [] && deletedQuestions === [] ) return;
 
       // Add/Update questions
@@ -118,6 +118,9 @@ class QAForm extends React.Component
       } );
 
       // Delete questions
+      deletedQuestions.forEach( ( question ) => {
+        if ( question.id != null ) this.deleteQuestion( question.id );
+      } );
 
       this.reloadForm();
     }
@@ -157,6 +160,14 @@ class QAForm extends React.Component
           }
         } );
       }
+    }
+
+    deleteQuestion( questionId ) {
+      const questionRef = config.referenceToQuestion
+        .replace( "{qaItemId}", this.state.qaItemId )
+        .replace( "{questionId}", questionId );
+
+      deleteDocument( questionRef );
     }
 
     reloadForm() {
