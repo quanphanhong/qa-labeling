@@ -5,6 +5,8 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { registerAuthChangedEvent, signInWithEmail, signUpWithEmail } from '../../services/auth';
+import { Redirect } from 'react-router-dom/cjs/react-router-dom.min';
 
 class MainPage extends React.Component
 {
@@ -13,11 +15,21 @@ class MainPage extends React.Component
 
         this.state = {
             showLoginForm: false,
-            showSignUpForm: false
+            showSignUpForm: false,
+            shouldRedirectToDataPage: false
         };
     }
 
+    componentDidMount() {
+        registerAuthChangedEvent( this.authChanged );
+    }
+
+    authChanged = ( userAvailable ) => userAvailable ? this.setState({ shouldRedirectToDataPage: true }) : "";
+
     render() {
+        if ( this.state.shouldRedirectToDataPage === true )
+            return (<Redirect to='/data' />)
+
         const shouldShowLoginForm = this.state.showLoginForm;
         const shouldShowSignUpForm = this.state.showSignUpForm;
 
@@ -69,7 +81,10 @@ class MainPage extends React.Component
 
     buildLoginForm() {
         const handleLoginClicked = () => {
-            // TODO get username & password to login
+            const emailElement = document.getElementById( "lg-email" );
+            const passwordElement = document.getElementById( "lg-password" );
+
+            signInWithEmail( emailElement.value, passwordElement.value );
         }
 
         const handleCancelClicked = () => {
@@ -82,22 +97,20 @@ class MainPage extends React.Component
                 <div className="loginForm">
                     <p>Login</p>
                     <Form>
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Control type="email" placeholder="Enter email" />
+                        <Form.Group className="mb-3">
+                            <Form.Control id="lg-email" type="email" placeholder="Enter email" />
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formBasicPassword">
-                            <Form.Control type="password" placeholder="Password" />
+                        <Form.Group className="mb-3">
+                            <Form.Control id="lg-password" type="password" placeholder="Password" />
                         </Form.Group>
                         <div>
                             <Button
                                 variant="primary"
-                                type="submit"
                                 className="authenticateButton"
                                 onClick={ handleLoginClicked }>Login</Button>
                             <Button
                                 variant="secondary"
-                                type="submit"
                                 className="authenticateButton"
                                 onClick={ handleCancelClicked }>Cancel</Button>
                         </div>
@@ -109,7 +122,10 @@ class MainPage extends React.Component
 
     buildSignupForm() {
         const handleSignUpClicked = () => {
-            // TODO get username & password to sign up
+            const emailElement = document.getElementById( "su-email" );
+            const passwordElement = document.getElementById( "su-password" );
+
+            signUpWithEmail( emailElement.value, passwordElement.value );
         }
 
         const handleCancelClicked = () => {
@@ -123,21 +139,19 @@ class MainPage extends React.Component
                     <p>Signup</p>
                     <Form>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Control type="email" placeholder="Enter email" />
+                            <Form.Control id="su-email" type="email" placeholder="Enter email" />
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formBasicPassword">
-                            <Form.Control type="password" placeholder="Password" />
+                            <Form.Control id="su-password" type="password" placeholder="Password" />
                         </Form.Group>
                         <div>
                             <Button
                                 variant="primary"
-                                type="submit"
                                 className="authenticateButton"
                                 onClick={ handleSignUpClicked }>Sign up</Button>
                             <Button
                                 variant="secondary"
-                                type="submit"
                                 className="authenticateButton"
                                 onClick={ handleCancelClicked }>Cancel</Button>
                         </div>

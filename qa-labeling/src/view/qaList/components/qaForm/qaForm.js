@@ -81,7 +81,7 @@ class QAForm extends React.Component
         <Modal.Footer>
           <Button variant="secondary" onClick={ () => this.props.onClose() }>Close</Button>
           <Button variant="primary" onClick={ () => this.saveQAItem() }>Download</Button>
-          <Button variant="primary" onClick={ () => this.handleSaving() }>Save</Button>
+          <Button variant="success" onClick={ () => this.handleSaving() }>Save</Button>
         </Modal.Footer>
       );
     }

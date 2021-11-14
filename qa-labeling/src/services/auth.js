@@ -9,12 +9,12 @@ import {
 
 const auth = getAuth( firebaseApp );
 
-export const registerAuthChangedEvent = () => {
+export const registerAuthChangedEvent = ( userLoggedInCallback ) => {
     onAuthStateChanged( auth, user => {
-        if ( user !== null ) {
-            console.log( 'Logged in!' );
+        if ( user != null ) {
+            userLoggedInCallback( true );
         } else {
-            console.log(' No user ');
+            userLoggedInCallback( false );
         }
     } );
 }
