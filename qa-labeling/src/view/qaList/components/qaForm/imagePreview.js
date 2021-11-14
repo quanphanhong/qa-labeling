@@ -111,7 +111,13 @@ class ImagePreview extends React.Component
     };
 
     getImageNameFromURL( imageURL ) {
-        return imageURL.substring( imageURL.lastIndexOf('/') + 1 );
+        const fullImageName = imageURL.substring( imageURL.lastIndexOf('/') + 1 );
+        const lastDotIndex = fullImageName.lastIndexOf('.');
+        const shortenImageName = ( lastDotIndex !== -1 ) ?
+            fullImageName.substring( 0, fullImageName.lastIndexOf('.') ) :
+            fullImageName;
+
+        return shortenImageName;
     }
 
     buildImagePreview() {
