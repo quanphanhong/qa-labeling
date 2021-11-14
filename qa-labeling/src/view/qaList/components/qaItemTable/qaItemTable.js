@@ -71,12 +71,12 @@ class QAItemTable extends React.Component
                     <td>{ tableCell.id }</td>
                     <td><img src={ tableCell.data.imgUrl } alt="" className="itemImg"/></td>
                     <td>{ timestampToString(tableCell.data.createdAt.seconds) }</td>
-                    <td>
+                    <td className="actionsCell">
                         <div className="actions">
                             <Button
                                 variant="warning"
                                 onClick={ () => this.props.loadQAItemEvent( tableCell.id ) }>Modify</Button>
-                            <Button variant="info">Download file</Button>
+                            <Button variant="info">Download</Button>
                             <Button variant="danger">Delete</Button>
                         </div>
                     </td>
