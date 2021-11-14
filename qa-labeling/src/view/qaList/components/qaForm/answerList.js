@@ -73,16 +73,16 @@ class AnswerList extends React.Component
     buildAnswerEntry() {
         return (
             <Form.Control
-                id="answerEntry"
+                id={ "answerEntry" + this.props.questionId }
                 className="answerEntry"
                 size="sm"
                 type="text"
                 placeholder="Enter new answer (Press Enter to add)"
-                onKeyUp={this.onKeyUp}/>
+                onKeyUp={ this.onKeyUp }/>
         );
     }
 
-    onKeyUp = (event) => {
+    onKeyUp = ( event ) => {
         const answerList = this.state.answers;
         const answer = event.target.value;
 

@@ -7,6 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import QuestionList from './questionList';
 import ImagePreview from './imagePreview';
+import { createDocument, updateDocument } from "../../../../services/firestoreHandler";
+import { config } from "../../../viewConfig";
 
 class QAForm extends React.Component
 {
@@ -15,12 +17,19 @@ class QAForm extends React.Component
 
         this.state = {
             qaItemId: props.qaItemId,
-            questionList: []
+            imageURL: "",
+            questionList: [],
+            deletedQuestions: [],
+            reload: false
         }
-        console.log(props);
     }
 
     render() {
+      if ( this.state.reload === true ) {
+        this.setState({ reload: false });
+        return <div></div>;
+      }
+
       return (
         <Modal show={ true } fullscreen="xxl-down">
           { this.buildFormHeader() }
@@ -42,7 +51,11 @@ class QAForm extends React.Component
       return (
         <Modal.Body>
           <div className="modalBodyContainer">
-            <ImagePreview className="imagePreview" qaItemId={ this.state.qaItemId } />
+            <ImagePreview
+              className="imagePreview"
+              onURLUpdated={ this.updateImageURL }
+              qaItemId={ this.state.qaItemId }
+            />
             <QuestionList
               className="questionForm"
               onQuestionUpdated={ this.updateQuestionList }
@@ -52,8 +65,15 @@ class QAForm extends React.Component
       );
     }
 
-    updateQuestionList = ( questionList ) => {
-      this.setState({ questionList: questionList });
+    updateImageURL = ( imageURL ) => {
+      this.setState({ imageURL: imageURL });
+    }
+
+    updateQuestionList = ( questionList, reservedQuestions ) => {
+      this.setState({
+        questionList: questionList,
+        deletedQuestions: reservedQuestions
+      });
     }
 
     buildFormFooter() {
@@ -67,7 +87,71 @@ class QAForm extends React.Component
     }
 
     handleSaving() {
-      console.log( "Saving", this.state.questionList );
+      const questionList = this.state.questionList;
+      const deletedQuestions = this.state.deletedQuestions;
+
+      this.updateImage();
+
+      // There's no modifications
+      if ( questionList === [] && deletedQuestions === [] ) return;
+
+      // Add/Update questions
+      questionList.forEach( ( question ) => {
+        if ( question.id == null ) {
+          this.addQuestionAndAnswers( question.data.question, question.data.answers );
+        } else {
+          this.updateQuestion( question.id, question.data.question );
+          this.updateAnswers( question.id, question.data.answers );
+        }
+      } );
+
+      // Delete questions
+
+      this.reloadForm();
+    }
+
+    async addQuestionAndAnswers( questionContent, answers ) {
+      const collectionRef = config.referenceToQuestionList.replace( "{qaItemId}", this.state.qaItemId );
+      const questionId = await createDocument( collectionRef, { question: questionContent } );
+
+      this.updateAnswers( questionId, answers );
+    }
+
+    updateImage() {
+      console.log(config.referenceToQAItem.replace( "{qaItemId}", this.state.qaItemId));
+      updateDocument(
+        config.referenceToQAItem.replace( "{qaItemId}", this.state.qaItemId ),
+        { imgUrl: this.state.imageURL }
+      );
+    }
+
+    updateQuestion( questionId, questionContent ) {
+      updateDocument(
+        config.referenceToQuestionList.replace( "{qaItemId}", this.state.qaItemId ) + "/" + questionId,
+        { question: questionContent }
+      );
+    }
+
+    updateAnswers( questionId, answers ) {
+      if ( answers != null ) {
+        answers.forEach( ( answer ) => {
+          if ( answer.id == null ) {
+            const itemRef = config.referenceToAnswerList
+              .replace( "{qaItemId}", this.state.qaItemId )
+              .replace( "{questionId}", questionId );
+
+            createDocument( itemRef, { answer: answer.data.answer } );
+          }
+        } );
+      }
+    }
+
+    reloadForm() {
+      this.setState({
+        questionList: [],
+        deletedQuestions: [],
+        reload: true
+      })
     }
 }
 

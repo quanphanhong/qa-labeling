@@ -17,7 +17,6 @@ export async function getDocument( referenceToDoc ) {
     const docSnap = await getDoc( docRef );
 
     if ( docSnap.exists ) {
-        console.log( "Document data: ", docSnap.data() );
         return docSnap.data();
     } else {
         console.log( "No such document" );
@@ -31,7 +30,6 @@ export async function getAllDocumentInCollection( referenceToCollection ) {
     const collectionData = [];
 
     querySnapshot.forEach( ( doc ) => {
-        console.log( doc.id, " => ", doc.data() );
         collectionData.push({
             id: doc.id,
             data: doc.data()
@@ -44,7 +42,9 @@ export async function getAllDocumentInCollection( referenceToCollection ) {
 export async function createDocument( referenceToCollection, data ) {
     const collectionRef = collection( db, referenceToCollection );
 
-    await addDoc( collectionRef, data );
+    const docRef = await addDoc( collectionRef, data );
+
+    return docRef.id;
 }
 
 export async function updateDocument( referenceToDoc, updatedData ) {

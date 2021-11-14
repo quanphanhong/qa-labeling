@@ -51,9 +51,6 @@ class ImagePreview extends React.Component
     }
 
     buildImageURLUpdater() {
-        const updateImageURL = (event) => {
-            this.setState({ imageUrl: event.target.value });
-        };
         return (
             <Form.Group className="formItem">
                 <Form.Label>Image URL</Form.Label>
@@ -61,22 +58,28 @@ class ImagePreview extends React.Component
                     id="imagePreviewControl"
                     type="url"
                     placeholder="Enter image URL"
-                    onChange={ updateImageURL }
+                    onChange={ () => this.updateImageURL() }
                 />
             </Form.Group>
         );
     }
 
+    updateImageURL = (event) => {
+        const imagePreviewControl = document.getElementById( "imagePreviewControl" );
+
+        this.setState({ imageUrl: imagePreviewControl.value });
+        this.props.onURLUpdated( imagePreviewControl.value );
+    };
+
     buildImagePreview() {
         return (
             <TransformWrapper className="imagePreviewItem">
                 <TransformComponent>
-                    <img src={this.state.imageUrl} width="50%" alt="PreviewImage"/>
+                    <img src={ this.state.imageUrl } width="50%" alt="PreviewImage"/>
                 </TransformComponent>
             </TransformWrapper>
         );
     }
-
 }
 
 export default ImagePreview;

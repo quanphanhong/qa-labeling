@@ -149,6 +149,7 @@ class QuestionList extends React.Component {
             questionList[ questionIndex - 1 ].data.question = event.target.value;
 
             this.setState({ questions: questionList });
+            this.sendQuestionUpdate();
         }
 
         return (
