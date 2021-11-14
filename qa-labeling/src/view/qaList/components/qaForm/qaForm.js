@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import QuestionList from './questionList';
 import ImagePreview from './imagePreview';
-import { createDocument, updateDocument } from "../../../../services/firestoreHandler";
+import { createDocument, getServerTimestamp, updateDocument } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig";
 
 class QAForm extends React.Component
@@ -86,7 +86,19 @@ class QAForm extends React.Component
       );
     }
 
-    handleSaving() {
+    async handleSaving() {
+      if ( this.state.qaItemId == null ) {
+        const qaItemId = await createDocument( config.referenceToAllQAItem,
+          { createdAt: getServerTimestamp() } );
+
+        this.setState({ qaItemId: qaItemId });
+        this.saveInfoToQAItem();
+      } else {
+        this.saveInfoToQAItem();
+      }
+    }
+
+    saveInfoToQAItem() {
       const questionList = this.state.questionList;
       const deletedQuestions = this.state.deletedQuestions;
 

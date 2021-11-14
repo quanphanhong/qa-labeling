@@ -6,7 +6,8 @@ import {
     collection,
     getDocs,
     addDoc,
-    updateDoc
+    updateDoc,
+    serverTimestamp
 } from "firebase/firestore";
 
 
@@ -51,4 +52,8 @@ export async function updateDocument( referenceToDoc, updatedData ) {
     const docRef = doc( db, referenceToDoc );
 
     await updateDoc( docRef, updatedData );
+}
+
+export function getServerTimestamp() {
+    return serverTimestamp();
 }
