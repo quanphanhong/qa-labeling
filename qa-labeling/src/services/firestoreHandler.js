@@ -4,8 +4,11 @@ import {
     doc,
     getDoc,
     collection,
-    getDocs
+    getDocs,
+    addDoc,
+    updateDoc
 } from "firebase/firestore";
+
 
 const db = getFirestore( firebaseApp );
 
@@ -36,4 +39,16 @@ export async function getAllDocumentInCollection( referenceToCollection ) {
     } );
 
     return collectionData;
+}
+
+export async function createDocument( referenceToCollection, data ) {
+    const collectionRef = collection( db, referenceToCollection );
+
+    await addDoc( collectionRef, data );
+}
+
+export async function updateDocument( referenceToDoc, updatedData ) {
+    const docRef = doc( db, referenceToDoc );
+
+    await updateDoc( docRef, updatedData );
 }
