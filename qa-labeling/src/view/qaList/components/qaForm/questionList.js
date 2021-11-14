@@ -75,13 +75,14 @@ class QuestionList extends React.Component {
                     questions.push( poppedReservedQuestion );
                     this.setState({ reservedQuestions: reservedQuestions })
                 } else {
-                    questions.push({
+                    const emptyQuestion = {
                         id: null,
                         data: {
-                            question: "",
-                            answers: []
+                            question: ""
                         }
-                    });
+                    };
+
+                    questions.push( emptyQuestion );
                 }
             } else {
                 const removedQuestion = questions.pop();
@@ -96,6 +97,8 @@ class QuestionList extends React.Component {
                 questions: questions,
                 questionCount: questions.length
             });
+
+            this.sendQuestionUpdate();
         }
 
         return (
@@ -115,11 +118,22 @@ class QuestionList extends React.Component {
         const renderingQuestionList = [];
 
         for ( let i = 0; i < questionList.length; i++ ) {
+            const handleAnswerUpdated = ( answerList ) => {
+                const questions = this.state.questions;
+                questions[i].data.answers = answerList;
+
+                this.setState({ questions: questions });
+                this.sendQuestionUpdate();
+            }
+
             const renderingQuestionItem = (
                 <div className="questionFormGroup" key={ config.questionKeyPrefix + i }>
                     { this.buildQuestionBox( i + 1 ) }
 
-                    <AnswerList qaItemId={ this.props.qaItemId } questionId={ questionList[ i ].id }/>
+                    <AnswerList
+                        qaItemId={ this.props.qaItemId }
+                        onAnswerUpdated={ handleAnswerUpdated }
+                        questionId={ questionList[ i ].id }/>
                 </div>
             );
 
@@ -130,6 +144,13 @@ class QuestionList extends React.Component {
     }
 
     buildQuestionBox( questionIndex ) {
+        const updateQuestionContent = ( event ) => {
+            const questionList = this.state.questions;
+            questionList[ questionIndex - 1 ].data.question = event.target.value;
+
+            this.setState({ questions: questionList });
+        }
+
         return (
             <Form.Group className="formItem">
                 <Form.Label>Question { questionIndex }</Form.Label>
@@ -138,6 +159,7 @@ class QuestionList extends React.Component {
                     type="text"
                     placeholder="What is your question?"
                     defaultValue={ this.getQuestionBoxDefaultValue( questionIndex - 1 ) }
+                    onChange={ updateQuestionContent }
                 />
             </Form.Group>
         );
@@ -149,6 +171,10 @@ class QuestionList extends React.Component {
         } else {
             return "";
         }
+    }
+
+    sendQuestionUpdate() {
+        this.props.onQuestionUpdated( this.state.questions );
     }
 }
 

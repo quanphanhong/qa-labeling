@@ -92,11 +92,16 @@ class AnswerList extends React.Component
                 data: { answer: answer }
             });
             this.setState({ answers: answerList });
+            this.sendAnswerUpdate();
 
             // Clear answer box
             const answerBox = document.getElementById(event.target.id);
             answerBox.value = "";
         }
+    }
+
+    sendAnswerUpdate() {
+        this.props.onAnswerUpdated( this.state.answers );
     }
 }
 

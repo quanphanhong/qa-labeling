@@ -1,4 +1,5 @@
 import React from 'react';
+import "./qaForm.css";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal"
@@ -13,7 +14,8 @@ class QAForm extends React.Component
         super( props );
 
         this.state = {
-            qaItemId: props.qaItemId
+            qaItemId: props.qaItemId,
+            questionList: []
         }
         console.log(props);
     }
@@ -41,10 +43,17 @@ class QAForm extends React.Component
         <Modal.Body>
           <div className="modalBodyContainer">
             <ImagePreview className="imagePreview" qaItemId={ this.state.qaItemId } />
-            <QuestionList className="questionForm" qaItemId={ this.state.qaItemId } />
+            <QuestionList
+              className="questionForm"
+              onQuestionUpdated={ this.updateQuestionList }
+              qaItemId={ this.state.qaItemId } />
           </div>
         </Modal.Body>
       );
+    }
+
+    updateQuestionList = ( questionList ) => {
+      this.setState({ questionList: questionList });
     }
 
     buildFormFooter() {
@@ -52,8 +61,13 @@ class QAForm extends React.Component
         <Modal.Footer>
           <Button variant="secondary" onClick={ () => this.props.onClose() }>Close</Button>
           <Button variant="primary">Download (In progress)</Button>
+          <Button variant="primary" onClick={ () => this.handleSaving() }>Save</Button>
         </Modal.Footer>
       );
+    }
+
+    handleSaving() {
+      console.log( "Saving", this.state.questionList );
     }
 }
 
