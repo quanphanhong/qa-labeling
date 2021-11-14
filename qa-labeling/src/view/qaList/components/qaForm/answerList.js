@@ -16,6 +16,8 @@ class AnswerList extends React.Component
         this.state = {
             answers: []
         };
+
+        this.onKeyUp = this.onKeyUp.bind(this);
     }
 
     componentDidMount() {
@@ -71,12 +73,30 @@ class AnswerList extends React.Component
     buildAnswerEntry() {
         return (
             <Form.Control
+                id="answerEntry"
                 className="answerEntry"
                 size="sm"
                 type="text"
                 placeholder="Enter new answer (Press Enter to add)"
                 onKeyUp={this.onKeyUp}/>
         );
+    }
+
+    onKeyUp = (event) => {
+        const answerList = this.state.answers;
+        const answer = event.target.value;
+
+        if (event.key === "Enter") {
+            answerList.push({
+                id: null,
+                data: { answer: answer }
+            });
+            this.setState({ answers: answerList });
+
+            // Clear answer box
+            const answerBox = document.getElementById(event.target.id);
+            answerBox.value = "";
+        }
     }
 }
 
