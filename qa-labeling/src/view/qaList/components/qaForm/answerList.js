@@ -17,9 +17,10 @@ class AnswerList extends React.Component
 
         this.state = {
             answers: [],
-            reservedAnswers: [],
+            deletedAnswers: [],
             editMode: false,
-            editingIndex: -1
+            editingIndex: -1,
+            onDelete: false
         };
 
         this.onKeyUp = this.onKeyUp.bind(this);
@@ -91,7 +92,9 @@ class AnswerList extends React.Component
                 <Dropdown.Item
                     eventKey="1"
                     onClick={ () => this.handleAnswerSelected( index ) }>Modify</Dropdown.Item>
-                <Dropdown.Item eventKey="2">Delete</Dropdown.Item>
+                <Dropdown.Item
+                    eventKey="2"
+                    onClick={ () => this.deleteAnswer( index ) }>Delete</Dropdown.Item>
             </DropdownButton>
         );
     }
@@ -164,7 +167,7 @@ class AnswerList extends React.Component
                 this.setState({ answers: answerList });
             }
 
-            this.sendAnswerUpdate( answerList );
+            this.sendAnswerUpdate( answerList, this.state.deletedAnswers );
 
             // Clear answer box
             const answerBox = document.getElementById(event.target.id);
@@ -179,8 +182,22 @@ class AnswerList extends React.Component
         }
     }
 
-    sendAnswerUpdate( answerList ) {
-        this.props.onAnswerUpdated( answerList );
+    deleteAnswer( index ) {
+        const answers = this.state.answers;
+        const deletedAnswers = this.state.deletedAnswers;
+
+        deletedAnswers.push( answers.splice( index, 1 ) );
+
+        this.setState({
+            answers: answers,
+            deletedAnswers: deletedAnswers
+        });
+
+        this.sendAnswerUpdate( answers, deletedAnswers )
+    }
+
+    sendAnswerUpdate( answerList, deletedAnswers ) {
+        this.props.onAnswerUpdated( answerList, deletedAnswers );
     }
 }
 

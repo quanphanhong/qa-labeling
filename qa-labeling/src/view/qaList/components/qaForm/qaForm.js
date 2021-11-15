@@ -22,6 +22,7 @@ class QAForm extends React.Component
       imageName: "",
       questionList: [],
       deletedQuestions: [],
+      deletedAnswers: [],
       reload: false
     }
   }
@@ -73,10 +74,11 @@ class QAForm extends React.Component
     this.setState({ imageURL: imageURL, imageName: imageName });
   }
 
-  updateQuestionList = ( questionList, reservedQuestions ) => {
+  updateQuestionList = ( questionList, reservedQuestions, deletedAnswers ) => {
     this.setState({
       questionList: questionList,
-      deletedQuestions: reservedQuestions
+      deletedQuestions: reservedQuestions,
+      deletedAnswers: deletedAnswers
     });
   }
 
@@ -84,13 +86,13 @@ class QAForm extends React.Component
     return (
       <Modal.Footer>
         <Button variant="secondary" onClick={ () => this.props.onClose() }>Close</Button>
-        <Button variant="primary" onClick={ () => this.saveQAItem() }>Download</Button>
+        <Button variant="primary" onClick={ () => this.handleDownloading() }>Download</Button>
         <Button variant="success" onClick={ () => this.handleSaving() }>Save</Button>
       </Modal.Footer>
     );
   }
 
-  async saveQAItem() {
+  async handleDownloading() {
     const imageURL = this.state.imageURL;
     const imageName = this.state.imageName;
     const questionList = this.state.questionList;
@@ -103,9 +105,7 @@ class QAForm extends React.Component
       questionList: questionList
     };
 
-    const jsonString = JSON.stringify( downloadedData );
-
-    await downloadJSONFile( jsonString, this.state.imageName );
+    await downloadJSONFile( JSON.stringify( downloadedData ), this.state.imageName );
 }
 
   async handleSaving() {
@@ -137,6 +137,22 @@ class QAForm extends React.Component
         this.updateQuestion( question.id, question.data.question );
         this.updateAnswers( question.id, question.data.answers );
       }
+    } );
+
+    // TODO Optimize this code
+    const deletedAnswers = this.state.deletedAnswers;
+    console.log(this.state.deletedAnswers);
+    deletedAnswers.forEach( ( answers ) => {
+      answers.answers.forEach( ( answer ) => {
+        answer.forEach( ( answerInfo ) => {
+          const answerRef = config.referenceToAnswer
+            .replace( "{qaItemId}", this.state.qaItemId )
+            .replace( "{questionId}", answers.questionId )
+            .replace( "{answerId}", answerInfo.id );
+
+          deleteDocument( answerRef );
+        } )
+      } );
     } );
 
     // Delete questions

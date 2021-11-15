@@ -109,7 +109,7 @@ class QAItemTable extends React.Component
         return (
             <Modal show={ this.state.showDeletePrompt }>
                 <Modal.Header closeButton>
-                    <Modal.Title>Delete</Modal.Title>
+                    <Modal.Title>Delete QA Item</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>Are you sure?</Modal.Body>
                 <Modal.Footer>
@@ -118,6 +118,15 @@ class QAItemTable extends React.Component
                 </Modal.Footer>
             </Modal>
         );
+    }
+
+    deleteQAItem() {
+        deleteDocument( config.referenceToQAItem.replace( "{qaItemId}", this.state.onDeleteItemId ) );
+        this.setState({
+            showDeletePrompt: false,
+            onDeleteItemId: ""
+        });
+        this.props.onReloadRequested();
     }
 
     handleNotDeleteQAItem = () => this.setState({ showDeletePrompt: false, onDeleteItemId: "" });
@@ -186,15 +195,6 @@ class QAItemTable extends React.Component
             showDeletePrompt: true,
             onDeleteItemId: qaItemId
         })
-    }
-
-    deleteQAItem() {
-        deleteDocument( config.referenceToQAItem.replace( "{qaItemId}", this.state.onDeleteItemId ) );
-        this.setState({
-            showDeletePrompt: false,
-            onDeleteItemId: ""
-        });
-        this.props.onReloadRequested();
     }
 }
 
