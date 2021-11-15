@@ -2,3 +2,15 @@
     margin-top: 0.7rem;
     margin-bottom: 1rem;
 }
+
+.answerItemGroup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.answerItem {
+    width: 100%;
+    height: fit-content;
+    font-size: small;
+}

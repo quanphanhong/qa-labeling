@@ -3,6 +3,8 @@ import "./answerList.css";
 
 import ListGroup from "react-bootstrap/ListGroup";
 import Form from "react-bootstrap/Form";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Dropdown from "react-bootstrap/Dropdown";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
@@ -14,7 +16,10 @@ class AnswerList extends React.Component
         super( props );
 
         this.state = {
-            answers: []
+            answers: [],
+            reservedAnswers: [],
+            editMode: false,
+            editingIndex: -1
         };
 
         this.onKeyUp = this.onKeyUp.bind(this);
@@ -49,26 +54,77 @@ class AnswerList extends React.Component
         return (
             <>
                 { this.buildAnswerList() }
-                { this.buildAnswerEntry() }
+                { ( this.state.editMode === true ) ?
+                    this.buildEditEntry() :
+                    this.buildAnswerEntry() }
             </>
         );
     }
 
     buildAnswerList() {
         const answerList = this.state.answers;
+        const editingIndex = this.state.editingIndex;
         const renderingAnswerList = [];
 
         for ( let i = 0; i < answerList.length; i++ ) {
             const renderingAnswerItem = (
-                <ListGroup.Item key={ config.answerItemKeyPrefix + i }>
-                    { answerList[i].data.answer }
-                </ListGroup.Item>
+                <div className="answerItemGroup" key={ config.answerItemKeyPrefix + i }>
+                    <ListGroup.Item
+                        id={ config.answerItemKeyPrefix + i }
+                        className="answerItem"
+                        variant={ editingIndex === i ? "primary" : "" }>
+                        { answerList[i].data.answer }
+                    </ListGroup.Item>
+                    { this.buildActionButtons( i ) }
+                </div>
             );
 
             renderingAnswerList.push( renderingAnswerItem );
         }
 
         return renderingAnswerList;
+    }
+
+    buildActionButtons( index ) {
+        return (
+            <DropdownButton title="Action" id="bg-nested-dropdown" variant="outline-dark">
+                <Dropdown.Item
+                    eventKey="1"
+                    onClick={ () => this.handleAnswerSelected( index ) }>Modify</Dropdown.Item>
+                <Dropdown.Item eventKey="2">Delete</Dropdown.Item>
+            </DropdownButton>
+        );
+    }
+
+    handleAnswerSelected = ( answerIndex ) => {
+        if ( this.state.editingIndex === answerIndex ) {
+            this.setEditingState( -1, false );
+        } else {
+            this.setEditingState( answerIndex, true );
+        }
+    }
+
+    setEditingState( editingIndex, editMode ) {
+        this.setState({ editingIndex: editingIndex, editMode: editMode });
+    }
+
+    buildEditEntry() {
+        return (
+            <Form.Control
+                id={ "editEntry" + this.props.questionId }
+                className="answerEntry"
+                size="sm"
+                type="text"
+                placeholder="Edit answer (Press ENTER to add, ESC to exit Edit Mode)"
+                onKeyUp={ this.onKeyUp }/>
+        );
+    }
+
+    setEditEntryDefaultValue() {
+        const editEntry = document.getElementById( "editEntry" + this.props.questionId );
+        if ( editEntry != null || this.state.editingIndex >= 0 ) {
+            editEntry.defaultValue = this.state.answers[ this.state.editingIndex ].data.answer;
+        }
     }
 
     buildAnswerEntry() {
@@ -78,31 +134,53 @@ class AnswerList extends React.Component
                 className="answerEntry"
                 size="sm"
                 type="text"
-                placeholder="Enter new answer (Press Enter to add)"
+                placeholder="Enter new answer (Press ENTER to add)"
                 onKeyUp={ this.onKeyUp }/>
         );
     }
 
     onKeyUp = ( event ) => {
         const answerList = this.state.answers;
+        const editMode = this.state.editMode;
+
         const answer = event.target.value;
 
         if (event.key === "Enter") {
-            answerList.push({
-                id: null,
-                data: { answer: answer }
-            });
-            this.setState({ answers: answerList });
-            this.sendAnswerUpdate();
+            if ( editMode === true ) {
+                const editingIndex = this.state.editingIndex;
+
+                answerList[ editingIndex ].data.answer = answer;
+
+                this.setState({
+                    answers: answerList,
+                    editMode: false,
+                    editingIndex: -1
+                });
+            } else {
+                answerList.push({
+                    id: null,
+                    data: { answer: answer }
+                });
+                this.setState({ answers: answerList });
+            }
+
+            this.sendAnswerUpdate( answerList );
 
             // Clear answer box
             const answerBox = document.getElementById(event.target.id);
             answerBox.value = "";
+        } else if ( event.key === "Escape" ) {
+            if ( editMode === true ) {
+                this.setState({
+                    editMode: false,
+                    editingIndex: -1
+                });
+            }
         }
     }
 
-    sendAnswerUpdate() {
-        this.props.onAnswerUpdated( this.state.answers );
+    sendAnswerUpdate( answerList ) {
+        this.props.onAnswerUpdated( answerList );
     }
 }
 

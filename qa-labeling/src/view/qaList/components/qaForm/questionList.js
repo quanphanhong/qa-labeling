@@ -123,7 +123,7 @@ class QuestionList extends React.Component {
         for ( let i = 0; i < questionList.length; i++ ) {
             const handleAnswerUpdated = ( answerList ) => {
                 const questions = this.state.questions;
-                questions[i].data.answers = answerList;
+                questions[ i ].data.answers = answerList;
 
                 this.setState({ questions: questions });
                 this.sendQuestionUpdate();
