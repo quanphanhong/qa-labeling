@@ -17,7 +17,8 @@ class QuestionList extends React.Component {
             dataIsLoaded: false,
             questions: [],
             reservedQuestions: [],
-            questionCount: null
+            questionCount: null,
+            deletedAnswers: []
         };
     }
 
@@ -121,11 +122,24 @@ class QuestionList extends React.Component {
         const renderingQuestionList = [];
 
         for ( let i = 0; i < questionList.length; i++ ) {
-            const handleAnswerUpdated = ( answerList ) => {
+            const handleAnswerUpdated = ( answerList, removedAnswers ) => {
                 const questions = this.state.questions;
-                questions[i].data.answers = answerList;
+                const deletedAnswers = this.state.deletedAnswers;
 
-                this.setState({ questions: questions });
+                if ( removedAnswers != null ) {
+                    const questionId = questionList[ i ].id;
+
+                    questions[ i ].data.answers = answerList;
+                    deletedAnswers.push({
+                        questionId: questionId,
+                        answers: removedAnswers
+                    });
+                }
+
+                this.setState({
+                    questions: questions,
+                    deletedAnswers: deletedAnswers
+                });
                 this.sendQuestionUpdate();
             }
 
@@ -178,7 +192,7 @@ class QuestionList extends React.Component {
     }
 
     sendQuestionUpdate() {
-        this.props.onQuestionUpdated( this.state.questions, this.state.reservedQuestions );
+        this.props.onQuestionUpdated( this.state.questions, this.state.reservedQuestions, this.state.deletedAnswers );
     }
 }
 
