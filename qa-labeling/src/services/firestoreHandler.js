@@ -25,6 +25,20 @@ export async function getDocument( referenceToDoc ) {
     }
 }
 
+export async function getDocumentWithID( referenceToDoc ) {
+    const docRef = doc( db, referenceToDoc );
+    const docSnap = await getDoc( docRef );
+
+    if ( docSnap.exists ) {
+        return {
+            id: docSnap.id,
+            data: docSnap.data()
+        };
+    } else {
+        console.log( "No such document" );
+    }
+}
+
 export async function getAllDocumentInCollection( referenceToCollection ) {
     const collectionRef = collection( db, referenceToCollection );
     const querySnapshot = await getDocs( collectionRef );
