@@ -5,6 +5,7 @@ import Button from "react-bootstrap/Button";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
+import ProgressBar from "react-bootstrap/ProgressBar";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import QAForm from "./components/qaForm/qaForm";
@@ -12,6 +13,8 @@ import QAItemTable from "./components/qaItemTable/qaItemTable";
 import { NavDropdown } from "react-bootstrap";
 import { logOut, registerAuthChangedEvent } from "../../services/auth";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
+import { downloadJSONFile } from "../../services/downloadHandler";
+import { buildQAItemList } from "../../services/dataBuilder";
 
 class QAList extends React.Component
 {
@@ -22,7 +25,8 @@ class QAList extends React.Component
           showQAForm: false,
           currentQAItemId: null,
           reload: false,
-          shouldRedirectToLoginPage: false
+          shouldRedirectToLoginPage: false,
+          downloadState: null
         };
     }
 
@@ -74,19 +78,37 @@ class QAList extends React.Component
   }
 
   buildQAItemList() {
+    const downloadState = this.state.downloadState;
+
     return (
       <div className="itemList">
         <h3>List of imported items</h3>
+        <ProgressBar striped variant="success" now={40} />
         <Button
           className="insertButton"
           variant="outline-primary"
           onClick={ () => this.loadQAItemHandler() }>Insert</Button>
+        <Button
+          className="insertButton"
+          variant="outline-secondary"
+          onClick={ async () => await this.downloadAllQAItems() }>
+            { downloadState == null ? "Download All" : downloadState }
+        </Button>
         <QAItemTable loadQAItemEvent={ this.loadQAItemHandler } onReloadRequested={ this.reload } />
       </div>
     )
   }
 
   loadQAItemHandler = ( qaItemId ) => this.setState({ currentQAItemId: qaItemId, showQAForm: true });
+
+  async downloadAllQAItems() {
+    await buildQAItemList( this.loadQAItemsCallback );
+  }
+
+  loadQAItemsCallback = ( qaItemData, current, max ) => {
+    this.setState({ downloadState: current + "/" + max });
+    downloadJSONFile( JSON.stringify( qaItemData ), qaItemData.image.imageName );
+  }
 
   reload = () => this.setState({ reload: true });
 
