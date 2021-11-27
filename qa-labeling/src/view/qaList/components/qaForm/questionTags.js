@@ -1,12 +1,14 @@
 import React from "react";
 import { WithContext as ReactTags } from 'react-tag-input';
+
 import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig";
+import "./questionTags.css"
 
 const KeyCodes = {
     comma: 188,
     enter: [10, 13],
-  };
+};
 
 const delimiters = [...KeyCodes.enter, KeyCodes.comma];
 
@@ -73,16 +75,15 @@ class QuestionTags extends React.Component {
     render() {
         const { tags, suggestions } = this.state;
         return (
-            <div>
                 <ReactTags
                     tags={ tags }
                     suggestions={ suggestions }
+                    inputFieldPosition="inline"
                     handleDelete={ this.handleDelete }
                     handleAddition={ this.handleAddition }
                     handleDrag={ this.handleDrag }
                     delimiters={ delimiters }
                     autocomplete={ true } />
-            </div>
         )
     }
 }

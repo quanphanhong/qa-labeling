@@ -149,7 +149,7 @@ class QuestionList extends React.Component {
             const tagsChangedCallback = ( tags ) => {
                 const questions = this.state.questions;
                 questions[ i ].data.tags = tags;
-                console.log( tags );
+
                 this.setState({ questionList: questions });
             }
 
