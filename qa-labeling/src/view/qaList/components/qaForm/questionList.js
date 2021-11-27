@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig";
 import AnswerList from './answerList';
+import QuestionTags from './questionTags';
 
 class QuestionList extends React.Component {
     constructor( props ) {
@@ -44,6 +45,8 @@ class QuestionList extends React.Component {
 
         const questionList = await getAllDocumentInCollection(
             config.referenceToQuestionList.replace( "{qaItemId}", this.props.qaItemId ) )
+
+        console.log(questionList);
 
         this.setState({
             questions: questionList,
@@ -143,6 +146,13 @@ class QuestionList extends React.Component {
                 this.sendQuestionUpdate();
             }
 
+            const tagsChangedCallback = ( tags ) => {
+                const questions = this.state.questions;
+                questions[ i ].data.tags = tags;
+
+                this.setState({ questionList: questions });
+            }
+
             const renderingQuestionItem = (
                 <div className="questionFormGroup" key={ config.questionKeyPrefix + i }>
                     { this.buildQuestionBox( i + 1 ) }
@@ -151,6 +161,10 @@ class QuestionList extends React.Component {
                         qaItemId={ this.props.qaItemId }
                         onAnswerUpdated={ handleAnswerUpdated }
                         questionId={ questionList[ i ].id }/>
+
+                    <QuestionTags
+                        questionTags={ questionList[ i ].data.tags }
+                        tagsChangedCallback={ tagsChangedCallback } />
                 </div>
             );
 

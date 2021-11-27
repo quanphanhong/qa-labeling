@@ -7,5 +7,6 @@ export const config = {
     referenceToAnswerList: "data/{qaItemId}/questionsList/{questionId}/answersList",
     referenceToAnswer: "data/{qaItemId}/questionsList/{questionId}/answersList/{answerId}",
     answerItemKeyPrefix: "_answerItem",
-    referenceToQAItem: "data/{qaItemId}"
+    referenceToQAItem: "data/{qaItemId}",
+    referenceToQuestionTagSuggestionList: "questionTagSuggestions"
 }

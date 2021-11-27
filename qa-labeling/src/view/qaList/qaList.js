@@ -15,6 +15,7 @@ import { logOut, registerAuthChangedEvent } from "../../services/auth";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 import { downloadJSONFile } from "../../services/downloadHandler";
 import { buildQAItemList } from "../../services/dataBuilder";
+import TagSuggestions from "./components/tagSuggestions/tagSuggestions";
 
 class QAList extends React.Component
 {
@@ -26,7 +27,8 @@ class QAList extends React.Component
           currentQAItemId: null,
           reload: false,
           shouldRedirectToLoginPage: false,
-          downloadState: null
+          downloadState: null,
+          tagSuggestionsOn: false
         };
     }
 
@@ -84,22 +86,34 @@ class QAList extends React.Component
       <div className="itemList">
         <h3>List of imported items</h3>
         <ProgressBar striped variant="success" now={40} />
-        <Button
-          className="insertButton"
-          variant="outline-primary"
-          onClick={ () => this.loadQAItemHandler() }>Insert</Button>
+        <div>
+          <Button
+            className="insertButton"
+            variant="outline-primary"
+            onClick={ () => this.loadQAItemHandler() }>Insert New Item</Button>
+          <Button
+            className="insertButton"
+            variant="outline-primary"
+            onClick={ () => this.updateTagSuggestions( true ) }>Update Question Tag Suggestions</Button>
+        </div>
         <Button
           className="insertButton"
           variant="outline-secondary"
           onClick={ async () => await this.downloadAllQAItems() }>
             { downloadState == null ? "Download All" : downloadState }
         </Button>
+
+        { this.state.tagSuggestionsOn === true ? <TagSuggestions hideCallback={() => this.setState({ tagSuggestionsOn: false })} /> : <></> }
         <QAItemTable loadQAItemEvent={ this.loadQAItemHandler } onReloadRequested={ this.reload } />
       </div>
     )
   }
 
   loadQAItemHandler = ( qaItemId ) => this.setState({ currentQAItemId: qaItemId, showQAForm: true });
+
+  updateTagSuggestions( on ) {
+    this.setState({ tagSuggestionsOn: on });
+  }
 
   async downloadAllQAItems() {
     await buildQAItemList( this.loadQAItemsCallback );
