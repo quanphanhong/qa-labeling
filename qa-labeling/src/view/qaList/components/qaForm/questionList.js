@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig";
 import AnswerList from './answerList';
+import QuestionTags from './questionTags';
 
 class QuestionList extends React.Component {
     constructor( props ) {
@@ -121,6 +122,8 @@ class QuestionList extends React.Component {
         const questionList = this.state.questions;
         const renderingQuestionList = [];
 
+        console.log(questionList);
+
         for ( let i = 0; i < questionList.length; i++ ) {
             const handleAnswerUpdated = ( answerList, removedAnswers ) => {
                 const questions = this.state.questions;
@@ -146,6 +149,8 @@ class QuestionList extends React.Component {
             const renderingQuestionItem = (
                 <div className="questionFormGroup" key={ config.questionKeyPrefix + i }>
                     { this.buildQuestionBox( i + 1 ) }
+
+                    <QuestionTags questionTags={ questionList[ i ].data.tags } />
 
                     <AnswerList
                         qaItemId={ this.props.qaItemId }
