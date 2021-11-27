@@ -27,6 +27,7 @@ export async function buildQuestionList( qaItemId, loadingCompletedCallback ) {
                                 id: questionItem.id,
                                 data: {
                                     question: questionItem.data.question,
+                                    tags: questionItem.data.tags,
                                     answers: answerList
                                 }
                             }
