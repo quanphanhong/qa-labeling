@@ -132,9 +132,9 @@ class QAForm extends React.Component
     // Add/Update questions
     questionList.forEach( ( question ) => {
       if ( question.id == null ) {
-        this.addQuestionAndAnswers( question.data.question, question.data.answers );
+        this.addQuestionAndAnswers( question.data.question, question.data.tags, question.data.answers );
       } else {
-        this.updateQuestion( question.id, question.data.question );
+        this.updateQuestion( question.id, question.data.tags, question.data.question );
         this.updateAnswers( question.id, question.data.answers );
       }
     } );
@@ -163,9 +163,9 @@ class QAForm extends React.Component
     this.reloadForm();
   }
 
-  async addQuestionAndAnswers( questionContent, answers ) {
+  async addQuestionAndAnswers( questionContent, tags, answers ) {
     const collectionRef = config.referenceToQuestionList.replace( "{qaItemId}", this.state.qaItemId );
-    const questionId = await createDocument( collectionRef, { question: questionContent } );
+    const questionId = await createDocument( collectionRef, { question: questionContent, tags: tags == null ? [] : tags } );
 
     this.updateAnswers( questionId, answers );
   }
@@ -179,10 +179,10 @@ class QAForm extends React.Component
     );
   }
 
-  updateQuestion( questionId, questionContent ) {
+  updateQuestion( questionId, tags, questionContent ) {
     updateDocument(
       config.referenceToQuestionList.replace( "{qaItemId}", this.state.qaItemId ) + "/" + questionId,
-      { question: questionContent }
+      { question: questionContent, tags: tags == null ? [] : tags }
     );
   }
 

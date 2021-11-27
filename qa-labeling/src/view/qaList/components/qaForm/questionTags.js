@@ -15,7 +15,7 @@ class QuestionTags extends React.Component {
         super(props);
 
         this.state = {
-            tags: ( this.props.questionTags == null ) ? [] : JSON.parse(this.props.questionTags),
+            tags: ( this.props.questionTags == null ) ? [] : this.props.questionTags,
             suggestions: []
         };
         this.handleDelete = this.handleDelete.bind(this);
@@ -38,13 +38,18 @@ class QuestionTags extends React.Component {
 
     handleDelete( i ) {
         const { tags } = this.state;
-        this.setState({
-         tags: tags.filter( ( tag, index ) => index !== i ),
-        });
+        this.setState(
+            { tags: tags.filter( ( tag, index ) => index !== i ) },
+            this.sendUpdatedTags
+        );
+
     }
 
-    handleAddition(tag) {
-        this.setState( state => ({ tags: [ ...state.tags, tag ] }) );
+    handleAddition( tag ) {
+        this.setState(
+            state => ({ tags: [ ...state.tags, tag ] }),
+            this.sendUpdatedTags
+        );
     }
 
     handleDrag( tag, currPos, newPos ) {
@@ -55,7 +60,14 @@ class QuestionTags extends React.Component {
         newTags.splice( newPos, 0, tag );
 
         // re-render
-        this.setState({ tags: newTags });
+        this.setState(
+            { tags: newTags },
+            this.sendUpdatedTags
+        );
+    }
+
+    sendUpdatedTags() {
+        this.props.tagsChangedCallback( this.state.tags );
     }
 
     render() {

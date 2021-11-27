@@ -46,6 +46,8 @@ class QuestionList extends React.Component {
         const questionList = await getAllDocumentInCollection(
             config.referenceToQuestionList.replace( "{qaItemId}", this.props.qaItemId ) )
 
+        console.log(questionList);
+
         this.setState({
             questions: questionList,
             questionCount: questionList.length,
@@ -122,8 +124,6 @@ class QuestionList extends React.Component {
         const questionList = this.state.questions;
         const renderingQuestionList = [];
 
-        console.log(questionList);
-
         for ( let i = 0; i < questionList.length; i++ ) {
             const handleAnswerUpdated = ( answerList, removedAnswers ) => {
                 const questions = this.state.questions;
@@ -146,11 +146,20 @@ class QuestionList extends React.Component {
                 this.sendQuestionUpdate();
             }
 
+            const tagsChangedCallback = ( tags ) => {
+                const questions = this.state.questions;
+                questions[ i ].data.tags = tags;
+                console.log( tags );
+                this.setState({ questionList: questions });
+            }
+
             const renderingQuestionItem = (
                 <div className="questionFormGroup" key={ config.questionKeyPrefix + i }>
                     { this.buildQuestionBox( i + 1 ) }
 
-                    <QuestionTags questionTags={ questionList[ i ].data.tags } />
+                    <QuestionTags
+                        questionTags={ questionList[ i ].data.tags }
+                        tagsChangedCallback={ tagsChangedCallback } />
 
                     <AnswerList
                         qaItemId={ this.props.qaItemId }
