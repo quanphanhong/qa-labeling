@@ -157,14 +157,14 @@ class QuestionList extends React.Component {
                 <div className="questionFormGroup" key={ config.questionKeyPrefix + i }>
                     { this.buildQuestionBox( i + 1 ) }
 
-                    <QuestionTags
-                        questionTags={ questionList[ i ].data.tags }
-                        tagsChangedCallback={ tagsChangedCallback } />
-
                     <AnswerList
                         qaItemId={ this.props.qaItemId }
                         onAnswerUpdated={ handleAnswerUpdated }
                         questionId={ questionList[ i ].id }/>
+
+                    <QuestionTags
+                        questionTags={ questionList[ i ].data.tags }
+                        tagsChangedCallback={ tagsChangedCallback } />
                 </div>
             );
 

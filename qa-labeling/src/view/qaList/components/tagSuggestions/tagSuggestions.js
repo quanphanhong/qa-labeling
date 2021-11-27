@@ -1,10 +1,11 @@
 import React from "react";
 
+import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import ListGroup from "react-bootstrap/ListGroup";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { getAllDocumentInCollection } from "../../../../services/firestoreHandler";
+import { createDocument, getAllDocumentInCollection } from "../../../../services/firestoreHandler";
 import { config } from "../../../viewConfig";
 
 class TagSuggestions extends React.Component {
@@ -14,6 +15,8 @@ class TagSuggestions extends React.Component {
         this.state = {
             suggestions: []
         };
+
+        this.onKeyUp = this.onKeyUp.bind( this );
     }
 
     componentDidMount() {
@@ -43,6 +46,7 @@ class TagSuggestions extends React.Component {
                 </Modal.Header>
                 <Modal.Body>
                     { this.buildSuggestionList() }
+                    { this.buildSuggestionTextBox() }
                 </Modal.Body>
             </Modal>
         );
@@ -62,11 +66,39 @@ class TagSuggestions extends React.Component {
 
         for ( const suggestionData of suggestionDataList ) {
             suggestionRenderers.push(
-                <ListGroup.Item key={ suggestionData.id }>{ suggestionData.data.text }</ListGroup.Item>
+                <ListGroup.Item key={ suggestionData.data.id }>{ suggestionData.data.text }</ListGroup.Item>
             )
         }
 
         return suggestionRenderers;
+    }
+
+    buildSuggestionTextBox() {
+        return (
+            <Form.Control
+                id={ "tagEntry" }
+                className="tagEntry"
+                size="sm"
+                type="text"
+                placeholder="Enter new tag suggestion (Press ENTER to add)"
+                onKeyUp={ this.onKeyUp }/>
+        );
+    }
+
+    onKeyUp = ( event ) => {
+        const newTagSuggestion = event.target.value;
+
+        if (event.key === "Enter") {
+            const newTagObj =  { id: newTagSuggestion, text: newTagSuggestion };
+
+            this.setState( state => ({ suggestions: [ ...state.suggestions, { data: newTagObj } ] }) )
+            createDocument(
+                config.referenceToQuestionTagSuggestionList,
+                newTagObj
+            );
+
+            event.target.value = "";
+        }
     }
 }
 
